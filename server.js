@@ -7,7 +7,7 @@ app.post('/search', jsonParser, function(req, res) {
   console.log(req.body.key);
 
   var opts = {
-    maxResults: 1,
+    maxResults: 12,
     key: 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM'
   };
 
