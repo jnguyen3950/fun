@@ -1,9 +1,19 @@
 var player = document.getElementById('player');
 var search = document.getElementById('search');
+var searchBox = document.getElementById('searchBox');
 
 search.addEventListener('click', function(event) {
-  event.preventDefault();
-  var searchBox = document.getElementById('searchBox');
+  searchData();
+})
+
+searchBox.addEventListener('keypress', function(event) {
+  if (event.keyCode == 13) {
+    searchData();
+    event.preventDefault();
+  }
+})
+
+function searchData() {
   var data = {key: searchBox.value};
 
   var xhr = new XMLHttpRequest();
@@ -19,4 +29,4 @@ search.addEventListener('click', function(event) {
     url = url.replace("watch?v=", "v/");
     player.setAttribute('src', url);
   })
-})
+}
