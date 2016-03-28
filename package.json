@@ -1,5 +1,5 @@
 {
-  "name": "funbook",
+  "name": "fun",
   "version": "1.0.0",
   "description": "",
   "main": "client.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jnguyen3950/funbook.git"
+    "url": "git+https://github.com/jnguyen3950/fun.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jnguyen3950/funbook/issues"
+    "url": "https://github.com/jnguyen3950/fun/issues"
   },
-  "homepage": "https://github.com/jnguyen3950/funbook#readme",
+  "homepage": "https://github.com/jnguyen3950/fun#readme",
   "dependencies": {
     "body-parser": "^1.15.0",
     "cookie-parser": "^1.4.1",
