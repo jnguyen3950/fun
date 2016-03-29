@@ -131,16 +131,6 @@ commentButton.addEventListener('click', function() {
   })
 })
 
-// <div class="media">
-//   <div class="media-left">
-//     <a href="#"><img class="media-object" style="width: 64px; height: 64px;"></a>
-//   </div>
-//   <div class="media-body">
-//     <h4 class="media-heading">Another media heading</h4>
-//     Say more things.
-//   </div>
-// </div>
-
 function addMedia(array, node) {
   var mediaBlock = document.createElement('div');
   var mediaLeft = document.createElement('div');
@@ -168,7 +158,9 @@ function addMedia(array, node) {
   node.appendChild(mediaBlock);
 
   if(array.hasReplies) {
-    // addMedia()
+    for (var i = 0; i < array.replies.length; i++) {
+      addMedia(array.replies[i], mediaBody);
+    }
   }
 }
 

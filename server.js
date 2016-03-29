@@ -24,8 +24,9 @@ app.post('/search', jsonParser, function(req, res) {
 app.post('/view', jsonParser, function(req, res) {
   console.log(req.body.dataId);
 
-  fetchCommentPage(req.body.dataId).then(function (commentPage) {
-    // console.log(commentPage);
+  // fetchCommentPage(req.body.dataId).then(function (commentPage) {
+  fetchCommentPage('eE4YgpkRGtI').then(function (commentPage) {
+    //Page contain 49 comments.
     res.send(commentPage);
     // return commentPage.nextPageToken;
   // }).then(function (pageToken) {
