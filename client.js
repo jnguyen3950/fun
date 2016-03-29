@@ -37,11 +37,12 @@ function searchData() {
 }
 
 function attachThumbnailListener() {
-  var nodeList = document.getElementsByClassName('videoBlock');
+  var nodeList = document.getElementsByClassName('videoImage');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
-      currentDataId = event.target.getAttribute('data-id');
-      var link = event.target.getAttribute('data-link');
+      var parent = event.target.parentNode;
+      currentDataId = parent.getAttribute('data-id');
+      var link = parent.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       player.setAttribute('src', link);
 
@@ -73,34 +74,14 @@ function attachThumbnailListener() {
   }
 }
 
-// var commentButton = document.getElementById('commentButton');
-// commentButton.addEventListener('click', function() {
-//   clearResult(commentNode);
-//
-//   var data = {dataId: currentDataId};
-//   var xhr = new XMLHttpRequest();
-//   xhr.open('POST', '/view');
-//   xhr.setRequestHeader('Content-type', 'application/json');
-//   xhr.send(JSON.stringify(data));
-//
-//   xhr.addEventListener('load', function() {
-//     var response = JSON.parse(xhr.response);
-//     console.log(response.comments);
-//     var commentArray = response.comments;
-//     if(commentArray.length > 0) {
-//       for (var i = 0; i < commentArray.length; i++) {
-//         addMedia(commentArray[i], commentNode);
-//       }
-//     }
-//     else {
-//       var noComment = document.createElement('h1');
-//       var noCommentText = document.createTextNode('No comment.');
-//       noComment.appendChild(noCommentText);
-//       commentNode.appendChild(noComment);
-//     }
-//   })
-// })
+function attachPlaylistListener() {
+  var nodeList = document.getElementsByClassName('playlistButton');
+  for (var i = 0; nodeList.length; i++) {
+    nodeList[i].addEventListener('click', function(event) {
 
+    })
+  }
+}
 
 function addThumbnail(object) {
   var videoBlock = document.createElement('div');
@@ -120,14 +101,15 @@ function addThumbnail(object) {
   caption.appendChild(addPlaylist);
   addPlaylist.appendChild(addPlayListTextNode);
 
-  videoBlock.setAttribute('class', 'col-sm-6 col-md-3 videoBlock');
+  videoBlock.setAttribute('class', 'col-sm-6 col-md-3');
   videoThumbnail.setAttribute('class', 'thumbnail');
-  thumbImage.setAttribute('data-link', object.link);
-  thumbImage.setAttribute('data-id', object.id);
+  videoThumbnail.setAttribute('data-id', object.id);
+  videoThumbnail.setAttribute('data-link', object.link);
   thumbImage.setAttribute('src', object.thumbnails.high.url);
   thumbImage.setAttribute('alt', 'Result video picture.');
+  thumbImage.setAttribute('class', 'videoImage');
   caption.setAttribute('class', 'caption');
-  addPlaylist.setAttribute('class', 'btn btn-default');
+  addPlaylist.setAttribute('class', 'btn btn-default playlistButton');
   addPlaylist.setAttribute('role', 'button');
 
   searchResult.appendChild(videoBlock);
