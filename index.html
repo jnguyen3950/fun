@@ -16,17 +16,17 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="brand" href="#"><img src="" alt="Fun logo." id="logo"></a>
+        <a id="logo" class="brand" href="#"><img src="" alt="Fun logo."></a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li class="active" id="homeBtn"><a href="#">Home</a></li>
+          <li id="homeBtn" class="active" ><a href="#">Home</a></li>
           <li>
             <form class="navbar-form" role="search">
               <div class="form-group">
-                <input type="text" class="form-control" id="searchBox" placeholder="Restaurant, bar, and whatnot..">
+                <input id="searchBox" type="text" class="form-control" placeholder="Restaurant, bar, and whatnot..">
               </div>
-              <input type="button" class="btn btn-default" value="Search" id="search"></input>
+              <input id="search" type="button" class="btn btn-default" value="Search"></input>
             </form>
           </li>
         </ul>
@@ -51,6 +51,9 @@
   <div id="playVideo" class="container">
     <div class="embed-responsive embed-responsive-16by9">
       <iframe id="player" class="embed-responsive-item" src="https://www.youtube.com/v/fNS4lecOaAc"></iframe>
+    </div>
+    <div id="comment">
+      <input id="commentButton" type="button" class="btn btn-default" value="Show comments"></input>
     </div>
   </div>
 
