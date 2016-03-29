@@ -1,8 +1,9 @@
 var player = document.getElementById('player');
-var comment = document.getElementById('comment');
+var commentNode = document.getElementById('comment');
 var search = document.getElementById('search');
 var searchBox = document.getElementById('searchBox');
 var searchResult = document.getElementById('searchResult');
+var current-data-id;
 
 search.addEventListener('click', function(event) {
   searchData();
@@ -55,6 +56,7 @@ function addThumbnail(object) {
   videoBlock.setAttribute('class', 'col-sm-6 col-md-3 videoBlock');
   videoThumbnail.setAttribute('class', 'thumbnail');
   thumbImage.setAttribute('data-link', object.link);
+  thumbImage.setAttribute('data-id', object.id);
   thumbImage.setAttribute('src', object.thumbnails.high.url);
   thumbImage.setAttribute('alt', 'Result video picture.');
   caption.setAttribute('class', 'caption');
@@ -77,6 +79,8 @@ function attachThumbnailListener() {
 
 var commentButton = document.getElementById('commentButton');
 commentButton.addEventListener('click', function() {
+  clearResult(commentNode);
+
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/view');
   xhr.send();
@@ -84,10 +88,9 @@ commentButton.addEventListener('click', function() {
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.response);
     console.log(response.comments);
-
     var commentArray = response.comments;
     for (var i = 0; i < commentArray.length; i++) {
-      addMedia(commentArray);
+      addMedia(commentArray[i], commentNode);
     }
 
   })
@@ -103,14 +106,14 @@ commentButton.addEventListener('click', function() {
 //   </div>
 // </div>
 
-function addMedia(array) {
+function addMedia(array, node) {
   var mediaBlock = document.createElement('div');
   var mediaLeft = document.createElement('div');
   var image = document.createElement('img');
   var mediaBody = document.createElement('div');
   var userName = document.createElement('h3');
-  var userNameText = document.createTextNode('');
-  var commentText = document.createTextNode('');
+  var userNameText = document.createTextNode(array.user);
+  var commentText = document.createTextNode(array.commentText);
 
   mediaBlock.appendChild(mediaLeft);
   mediaLeft.appendChild(image);
@@ -126,7 +129,11 @@ function addMedia(array) {
   mediaBody.setAttribute('class', 'media-body');
   userName.setAttribute('class', 'media-heading');
 
-  comment.appendChild(mediaBlock);
+  node.appendChild(mediaBlock);
+
+  if(array.hasReplies) {
+    // addMedia()
+  }
 }
 
 function clearResult(result) {
