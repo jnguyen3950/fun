@@ -12,11 +12,29 @@ searchBox.addEventListener('keypress', function(event) {
     searchData();
     event.preventDefault();
   }
+  // viewVideo();
 })
 
-function searchData() {
-  var data = {key: searchBox.value};
+function viewVideo() {
+  var nodeList = document.getElementsByClassName('videoBlock');
+  console.log(nodeList);
+  console.log(nodeList.length);
+  for (var i = 0; i < nodeList.length; i++) {
+    nodeList[i].addEventListener('click', function(event) {
+      if (event.target.classList.contains('img')) {
+        var link = event.target.getAttribute('data-link');
+        link = link.replace("watch?v=", "v/");
+        player.setAttribute('src', link);
+      }
+      console.log(event.target);
+    })
+  }
+}
 
+function searchData() {
+  clearResult(searchResult);
+
+  var data = {key: searchBox.value};
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/search');
   xhr.setRequestHeader('Content-type', 'application/json');
@@ -24,22 +42,13 @@ function searchData() {
 
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < response.length; i++) {
       addThumbnail(response[i]);
-      console.log(response[i]);
-      console.log(response[i].thumbnails.high.url);
-      // thumbImage.setAttribute('src', response[i].thumbnails.high.url);
-      // searchResult.appendChild(videoBlock);
-
-
-      // console.log(response[0].link);
-      // var url = _.propertyOf(response[0])('link');
-      // url = url.replace("watch?v=", "v/");
-      // player.setAttribute('src', url);
-
-
+      // console.log(response[i]);
+      // console.log(response[i].thumbnails.high.url);
     }
   })
+  viewVideo();
 }
 
 function addThumbnail(object) {
@@ -60,13 +69,19 @@ function addThumbnail(object) {
   caption.appendChild(addPlaylist);
   addPlaylist.appendChild(addPlayListTextNode);
 
-  videoBlock.setAttribute('class', 'col-sm-6 col-md-3');
+  videoBlock.setAttribute('class', 'col-sm-6 col-md-3 videoBlock');
   videoThumbnail.setAttribute('class', 'thumbnail');
+  thumbImage.setAttribute('data-link', object.link);
+  thumbImage.setAttribute('src', object.thumbnails.high.url);
   thumbImage.setAttribute('alt', 'Result video picture.');
   caption.setAttribute('class', 'caption');
   addPlaylist.setAttribute('class', 'btn btn-default');
   addPlaylist.setAttribute('role', 'button');
-
-  thumbImage.setAttribute('src', object.thumbnails.high.url);
   searchResult.appendChild(videoBlock);
+}
+
+function clearResult(result) {
+  while(result.firstChild) {
+    result.removeChild(result.firstChild);
+  }
 }
