@@ -3,7 +3,7 @@ var commentNode = document.getElementById('comment');
 var search = document.getElementById('search');
 var searchBox = document.getElementById('searchBox');
 var searchResult = document.getElementById('searchResult');
-var current-data-id;
+var currentDataId;
 
 search.addEventListener('click', function(event) {
   searchData();
@@ -70,9 +70,35 @@ function attachThumbnailListener() {
   var nodeList = document.getElementsByClassName('videoBlock');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
+      currentDataId = event.target.getAttribute('data-id');
       var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       player.setAttribute('src', link);
+
+      clearResult(commentNode);
+
+      var data = {dataId: currentDataId};
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/view');
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.send(JSON.stringify(data));
+
+      xhr.addEventListener('load', function() {
+        var response = JSON.parse(xhr.response);
+        console.log(response.comments);
+        var commentArray = response.comments;
+        if(commentArray.length > 0) {
+          for (var i = 0; i < commentArray.length; i++) {
+            addMedia(commentArray[i], commentNode);
+          }
+        }
+        else {
+          var noComment = document.createElement('h1');
+          var noCommentText = document.createTextNode('No comment.');
+          noComment.appendChild(noCommentText);
+          commentNode.appendChild(noComment);
+        }
+      })
     })
   }
 }
@@ -81,18 +107,27 @@ var commentButton = document.getElementById('commentButton');
 commentButton.addEventListener('click', function() {
   clearResult(commentNode);
 
+  var data = {dataId: currentDataId};
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/view');
-  xhr.send();
+  xhr.open('POST', '/view');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
 
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.response);
     console.log(response.comments);
     var commentArray = response.comments;
-    for (var i = 0; i < commentArray.length; i++) {
-      addMedia(commentArray[i], commentNode);
+    if(commentArray.length > 0) {
+      for (var i = 0; i < commentArray.length; i++) {
+        addMedia(commentArray[i], commentNode);
+      }
     }
-
+    else {
+      var noComment = document.createElement('h1');
+      var noCommentText = document.createTextNode('No comment.');
+      noComment.appendChild(noCommentText);
+      commentNode.appendChild(noComment);
+    }
   })
 })
 
@@ -111,13 +146,14 @@ function addMedia(array, node) {
   var mediaLeft = document.createElement('div');
   var image = document.createElement('img');
   var mediaBody = document.createElement('div');
-  var userName = document.createElement('h3');
+  var userName = document.createElement('h4');
   var userNameText = document.createTextNode(array.user);
   var commentText = document.createTextNode(array.commentText);
 
   mediaBlock.appendChild(mediaLeft);
   mediaLeft.appendChild(image);
   mediaBlock.appendChild(mediaBody);
+  mediaBody.appendChild(userName);
   userName.appendChild(userNameText);
   mediaBody.appendChild(commentText);
 

@@ -5,8 +5,6 @@ var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
 
 app.post('/search', jsonParser, function(req, res) {
-  console.log(req.body.term);
-
   var opts = {
     maxResults: 12,
     key: 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM',
@@ -21,12 +19,13 @@ app.post('/search', jsonParser, function(req, res) {
     // console.dir(results.id);
     res.send(results);
   });
-
 });
 
-app.get('/view', function(req, res) {
-  fetchCommentPage('KuvWdZ3SJuQ').then(function (commentPage) {
-    console.log(commentPage);
+app.post('/view', jsonParser, function(req, res) {
+  console.log(req.body.dataId);
+
+  fetchCommentPage(req.body.dataId).then(function (commentPage) {
+    // console.log(commentPage);
     res.send(commentPage);
     // return commentPage.nextPageToken;
   // }).then(function (pageToken) {
