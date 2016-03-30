@@ -167,6 +167,10 @@ function showPlaylist(playlistArray) {
       caption.setAttribute('class', 'caption');
 
       attachThumbnailListener();
+
+      videoBlock.addEventListener('click', function() {
+        videoBlock.removeChild(videoBlock.firstChild);
+      })
     })
     currentPlaylistIndex++;
   }
