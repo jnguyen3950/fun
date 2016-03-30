@@ -152,6 +152,7 @@ function showPlaylist(playlistArray) {
       var caption = document.createElement('div');
       var title = document.createElement('h2');
 
+      sidebarList.appendChild(videoBlock);
       videoBlock.appendChild(videoThumbnail);
       videoThumbnail.appendChild(thumbImage);
       videoThumbnail.appendChild(caption);
@@ -160,12 +161,12 @@ function showPlaylist(playlistArray) {
       videoThumbnail.setAttribute('class', 'thumbnail');
       thumbImage.setAttribute('data-link', response[0].link);
       thumbImage.setAttribute('data-id', response[0].id);
-      thumbImage.setAttribute('src', response[0].thumbnails.medium.url);
+      thumbImage.setAttribute('src', response[0].thumbnails.high.url);
       thumbImage.setAttribute('alt', 'Result video picture.');
       thumbImage.setAttribute('class', 'videoImage');
       caption.setAttribute('class', 'caption');
 
-      sidebarList.appendChild(videoBlock);
+      attachThumbnailListener();
     })
     currentPlaylistIndex++;
   }
