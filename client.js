@@ -6,6 +6,8 @@ var searchBox = document.getElementById('searchBox');
 var searchResult = document.getElementById('searchResult');
 var currentDataId;
 
+var playlistArray = [];
+
 search.addEventListener('click', function(event) {
   searchData();
 })
@@ -28,11 +30,11 @@ function searchData() {
 
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
-    console.log(response[0]);
     for (var i = 0; i < response.length; i++) {
       addThumbnail(response[i]);
     }
     attachThumbnailListener();
+    attachPlaylistListener();
   })
 }
 
@@ -40,9 +42,8 @@ function attachThumbnailListener() {
   var nodeList = document.getElementsByClassName('videoImage');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
-      var parent = event.target.parentNode;
-      currentDataId = parent.getAttribute('data-id');
-      var link = parent.getAttribute('data-link');
+      currentDataId = event.target.getAttribute('data-id');
+      var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       player.setAttribute('src', link);
 
@@ -56,7 +57,6 @@ function attachThumbnailListener() {
 
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
-        console.log(response.comments);
         var commentArray = response.comments;
         if(commentArray.length > 0) {
           for (var i = 0; i < commentArray.length; i++) {
@@ -76,9 +76,11 @@ function attachThumbnailListener() {
 
 function attachPlaylistListener() {
   var nodeList = document.getElementsByClassName('playlistButton');
-  for (var i = 0; nodeList.length; i++) {
+  for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
-
+      var playlistId = event.target.getAttribute('data-id');
+      playlistArray.push(playlistId);
+      playlistArray = _.uniq(playlistArray);
     })
   }
 }
@@ -103,14 +105,16 @@ function addThumbnail(object) {
 
   videoBlock.setAttribute('class', 'col-sm-6 col-md-3');
   videoThumbnail.setAttribute('class', 'thumbnail');
-  videoThumbnail.setAttribute('data-id', object.id);
-  videoThumbnail.setAttribute('data-link', object.link);
+  thumbImage.setAttribute('data-link', object.link);
+  thumbImage.setAttribute('data-id', object.id);
   thumbImage.setAttribute('src', object.thumbnails.high.url);
   thumbImage.setAttribute('alt', 'Result video picture.');
   thumbImage.setAttribute('class', 'videoImage');
   caption.setAttribute('class', 'caption');
   addPlaylist.setAttribute('class', 'btn btn-default playlistButton');
   addPlaylist.setAttribute('role', 'button');
+  addPlaylist.setAttribute('data-link', object.link);
+  addPlaylist.setAttribute('data-id', object.id);
 
   searchResult.appendChild(videoBlock);
 }
