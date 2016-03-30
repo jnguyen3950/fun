@@ -4,11 +4,12 @@
   <title>Project: Fun</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/default.css">
 </head>
 <body>
   <!-- navbar -->
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -22,12 +23,12 @@
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li id="homeBtn" class="active" ><a href="#">Home</a></li>
-          <li><a href="#">Playlist</a></li>
-          <li><a href="#">History</a></li>
+          <li id="playlistButton"><a href="#">Playlist</a></li>
+          <li id='historyButton'><a href="#">History</a></li>
           <li>
             <form class="navbar-form" role="search">
               <div class="form-group">
-                <input id="searchBox" type="text" class="form-control" placeholder="Batman, Superman, Whateverman, ...">
+                <input id="searchBox" type="text" class="form-control" placeholder="Batman, Superman, Fun, ...">
               </div>
               <input id="search" type="button" class="btn btn-default" value="Search"></input>
             </form>
@@ -38,15 +39,26 @@
   </nav>
   <!-- End navbar -->
 
-  <div id="searchResult" class="container"></div>
-
-  <div id="playVideo" class="container">
-    <div class="embed-responsive embed-responsive-16by9">
-      <iframe id="player" class="embed-responsive-item" src="https://www.youtube.com/v/fNS4lecOaAc"></iframe>
+  <div class="container-fluid">
+    <div id="sidebar" class="col-md-2 sidebar hidden-sm">
+      <ul id="sidebarList" class="nav nav-sidebar navbar-fixed">
+        <li class="active"><a href="#">Playlist</span></a></li>
+      </ul>
     </div>
-    <div id="tag"></div>
-    <!-- <input id="commentButton" type="button" class="btn btn-default" value="Show comments"></input> -->
-    <div id="comment"></div>
+
+    <div id="main" class="col-md-10 col-md-offset-2">
+      <div id="searchResult" class="container"></div>
+
+      <div id="playVideo" class="container">
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe id="player" class="embed-responsive-item" src="https://www.youtube.com/v/fNS4lecOaAc"></iframe>
+        </div>
+        <div id="tag"></div>
+        <!-- <input id="commentButton" type="button" class="btn btn-default" value="Show comments"></input> -->
+        <div id="comment"></div>
+      </div>
+    </div>
+
   </div>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

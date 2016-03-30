@@ -8,8 +8,8 @@ app.post('/search', jsonParser, function(req, res) {
   var opts = {
     maxResults: 12,
     key: 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM',
-    order: 'rating',
     type: 'video',
+    regionID: 'US'
   };
 
   search(req.body.term, opts, function(err, results) {
@@ -18,7 +18,18 @@ app.post('/search', jsonParser, function(req, res) {
   });
 });
 
-app.post('/view', jsonParser, function(req, res) {
+app.post('/searchPlaylist', jsonParser, function(req, res) {
+  var opts = {
+    key: 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM'
+  };
+
+  search(req.body.dataId, opts, function(err, results) {
+    if(err) return console.log(err);
+    res.send(results);
+  });
+})
+
+app.post('/comments', jsonParser, function(req, res) {
   fetchCommentPage(req.body.dataId).then(function (commentPage) {
     res.send(commentPage);
     // return commentPage.nextPageToken;
@@ -29,6 +40,8 @@ app.post('/view', jsonParser, function(req, res) {
   //   console.log(commentPage);
   });
 });
+
+
 
 app.use(express.static('./'));
 

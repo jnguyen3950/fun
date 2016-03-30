@@ -1,5 +1,9 @@
 var player = document.getElementById('player');
 var tag = document.getElementById('tag');
+var playlistButton = document.getElementById('playlistButton');
+var historyButton = document.getElementById('historyButton');
+var sidebar = document.getElementById('sidebar');
+var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
 var search = document.getElementById('search');
 var searchBox = document.getElementById('searchBox');
@@ -7,6 +11,7 @@ var searchResult = document.getElementById('searchResult');
 var currentDataId;
 
 var playlistArray = [];
+var currentPlaylistIndex = 0;
 
 search.addEventListener('click', function(event) {
   searchData();
@@ -17,6 +22,13 @@ searchBox.addEventListener('keypress', function(event) {
     searchData();
     event.preventDefault();
   }
+})
+
+playlistButton.addEventListener('click', function() {
+  sidebar.classList.toggle('hidden');
+  main.classList.toggle('col-md-offset-2');
+  main.classList.toggle('col-md-10');
+  main.classList.toggle('col-md-12');
 })
 
 function searchData() {
@@ -34,7 +46,7 @@ function searchData() {
       addThumbnail(response[i]);
     }
     attachThumbnailListener();
-    attachPlaylistListener();
+    attachPlaylistButtonListener();
   })
 }
 
@@ -51,7 +63,7 @@ function attachThumbnailListener() {
 
       var data = {dataId: currentDataId};
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', '/view');
+      xhr.open('POST', '/comments');
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.send(JSON.stringify(data));
 
@@ -74,13 +86,14 @@ function attachThumbnailListener() {
   }
 }
 
-function attachPlaylistListener() {
+function attachPlaylistButtonListener() {
   var nodeList = document.getElementsByClassName('playlistButton');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
       var playlistId = event.target.getAttribute('data-id');
       playlistArray.push(playlistId);
       playlistArray = _.uniq(playlistArray);
+      showPlaylist(playlistArray);
     })
   }
 }
@@ -115,8 +128,47 @@ function addThumbnail(object) {
   addPlaylist.setAttribute('role', 'button');
   addPlaylist.setAttribute('data-link', object.link);
   addPlaylist.setAttribute('data-id', object.id);
+  addPlaylist.setAttribute('data-img', object.thumbnails.high.url);
 
   searchResult.appendChild(videoBlock);
+}
+
+function showPlaylist(playlistArray) {
+  while (currentPlaylistIndex < playlistArray.length) {
+    var data = {dataId: playlistArray[currentPlaylistIndex]};
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'searchPlaylist');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(JSON.stringify(data));
+
+    xhr.addEventListener('load', function() {
+      var response = JSON.parse(xhr.response);
+
+      var sidebarList = document.getElementById('sidebarList');
+      var videoBlock = document.createElement('div');
+      var videoThumbnail = document.createElement('div');
+      var thumbImage = document.createElement('img');
+      var caption = document.createElement('div');
+      var title = document.createElement('h2');
+
+      videoBlock.appendChild(videoThumbnail);
+      videoThumbnail.appendChild(thumbImage);
+      videoThumbnail.appendChild(caption);
+      caption.appendChild(title);
+
+      videoThumbnail.setAttribute('class', 'thumbnail');
+      thumbImage.setAttribute('data-link', response[0].link);
+      thumbImage.setAttribute('data-id', response[0].id);
+      thumbImage.setAttribute('src', response[0].thumbnails.medium.url);
+      thumbImage.setAttribute('alt', 'Result video picture.');
+      thumbImage.setAttribute('class', 'videoImage');
+      caption.setAttribute('class', 'caption');
+
+      sidebarList.appendChild(videoBlock);
+    })
+    currentPlaylistIndex++;
+  }
 }
 
 function addMedia(array, node) {
