@@ -2,12 +2,16 @@ var player = document.getElementById('player');
 var tag = document.getElementById('tag');
 var playlistButton = document.getElementById('playlistButton');
 var historyButton = document.getElementById('historyButton');
+var trendingButton = document.getElementById('trendingButton');
+var recommendButton = document.getElementById('recommendButton');
 var sidebar = document.getElementById('sidebar');
 var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
 var search = document.getElementById('search');
 var searchBox = document.getElementById('searchBox');
+var trendingResult = document.getElementById('trendingResult');
 var searchResult = document.getElementById('searchResult');
+
 var currentDataId;
 
 var playlistArray = [];
@@ -24,12 +28,37 @@ searchBox.addEventListener('keypress', function(event) {
   }
 })
 
+trendingButton.addEventListener('click', function(event) {
+  trendingData();
+})
+
 playlistButton.addEventListener('click', function() {
   sidebar.classList.toggle('hidden');
   main.classList.toggle('col-md-offset-2');
   main.classList.toggle('col-md-10');
   main.classList.toggle('col-md-12');
 })
+
+function trendingData() {
+  clearResult(trendingResult);
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('GET', '/trending');
+  xhr.send();
+
+  xhr.addEventListener('load', function() {
+    var response = JSON.parse(xhr.responseText);
+    for (var i = 0; i < response.items.length; i++) {
+      var link = "https://www.youtube.com/watch?v=" + response.items[i].id;
+      var id = response.items[i].id;
+      var img = response.items[i].snippet.thumbnails.high.url;
+      var title = response.items[i].snippet.title;
+      addThumbnail(trendingResult, link, id, img, title);
+    }
+    attachThumbnailListener();
+    attachPlaylistButtonListener();
+  })
+}
 
 function searchData() {
   clearResult(searchResult);
@@ -43,7 +72,12 @@ function searchData() {
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
     for (var i = 0; i < response.length; i++) {
-      addThumbnail(response[i]);
+      console.log(response[i]);
+      link = response[i].link;
+      id = response[i].id;
+      img = response[i].thumbnails.high.url;
+      title = response[i].title;
+      addThumbnail(searchResult, link, id, img, title);
     }
     attachThumbnailListener();
     attachPlaylistButtonListener();
@@ -72,7 +106,7 @@ function attachThumbnailListener() {
         var commentArray = response.comments;
         if(commentArray.length > 0) {
           for (var i = 0; i < commentArray.length; i++) {
-            addMedia(commentArray[i], commentNode);
+            addCommentMedia(commentArray[i], commentNode);
           }
         }
         else {
@@ -98,39 +132,40 @@ function attachPlaylistButtonListener() {
   }
 }
 
-function addThumbnail(object) {
+function addThumbnail(node, link, id, img, titleText) {
   var videoBlock = document.createElement('div');
   var videoThumbnail = document.createElement('div');
   var thumbImage = document.createElement('img');
   var caption = document.createElement('div');
-  var title = document.createElement('h2');
+  var title = document.createElement('h4');
+  var titleTextNode = document.createTextNode(titleText);
   var description = document.createElement('p');
   var addPlaylist = document.createElement('a');
   var addPlayListTextNode = document.createTextNode('Add to playlist');
 
+  node.appendChild(videoBlock);
   videoBlock.appendChild(videoThumbnail);
   videoThumbnail.appendChild(thumbImage);
   videoThumbnail.appendChild(caption);
   caption.appendChild(title);
   caption.appendChild(description);
   caption.appendChild(addPlaylist);
+  title.appendChild(titleTextNode);
   addPlaylist.appendChild(addPlayListTextNode);
 
   videoBlock.setAttribute('class', 'col-sm-6 col-md-3');
   videoThumbnail.setAttribute('class', 'thumbnail');
-  thumbImage.setAttribute('data-link', object.link);
-  thumbImage.setAttribute('data-id', object.id);
-  thumbImage.setAttribute('src', object.thumbnails.high.url);
+  thumbImage.setAttribute('data-link', link);
+  thumbImage.setAttribute('data-id', id);
+  thumbImage.setAttribute('src', img);
   thumbImage.setAttribute('alt', 'Result video picture.');
   thumbImage.setAttribute('class', 'videoImage');
   caption.setAttribute('class', 'caption');
   addPlaylist.setAttribute('class', 'btn btn-default playlistButton');
   addPlaylist.setAttribute('role', 'button');
-  addPlaylist.setAttribute('data-link', object.link);
-  addPlaylist.setAttribute('data-id', object.id);
-  addPlaylist.setAttribute('data-img', object.thumbnails.high.url);
-
-  searchResult.appendChild(videoBlock);
+  addPlaylist.setAttribute('data-link', link);
+  addPlaylist.setAttribute('data-id', id);
+  addPlaylist.setAttribute('data-img', img);
 }
 
 function showPlaylist(playlistArray) {
@@ -176,7 +211,7 @@ function showPlaylist(playlistArray) {
   }
 }
 
-function addMedia(array, node) {
+function addCommentMedia(array, node) {
   var mediaBlock = document.createElement('div');
   var mediaLeft = document.createElement('div');
   var image = document.createElement('img');
@@ -185,6 +220,7 @@ function addMedia(array, node) {
   var userNameText = document.createTextNode(array.user);
   var commentText = document.createTextNode(array.commentText);
 
+  node.appendChild(mediaBlock);
   mediaBlock.appendChild(mediaLeft);
   mediaLeft.appendChild(image);
   mediaBlock.appendChild(mediaBody);
@@ -200,11 +236,9 @@ function addMedia(array, node) {
   mediaBody.setAttribute('class', 'media-body');
   userName.setAttribute('class', 'media-heading');
 
-  node.appendChild(mediaBlock);
-
   if(array.hasReplies) {
     for (var i = 0; i < array.replies.length; i++) {
-      addMedia(array.replies[i], mediaBody);
+      addCommentMedia(array.replies[i], mediaBody);
     }
   }
 }

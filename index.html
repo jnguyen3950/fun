@@ -25,6 +25,8 @@
           <li id="homeBtn" class="active" ><a href="#">Home</a></li>
           <li id="playlistButton"><a href="#">Playlist</a></li>
           <li id='historyButton'><a href="#">History</a></li>
+          <li id='trendingButton'><a href="#">Trending</a></li>
+          <li id='recommendButton'><a href="#">Recommendation</a></li>
           <li>
             <form class="navbar-form" role="search">
               <div class="form-group">
@@ -47,6 +49,8 @@
     </div>
 
     <div id="main" class="col-md-10 col-md-offset-2">
+      <div id="trendingResult" class="container"></div>
+
       <div id="searchResult" class="container"></div>
 
       <div id="playVideo" class="container">
@@ -58,8 +62,9 @@
         <div id="comment"></div>
       </div>
     </div>
-
   </div>
+
+  <div id="videos"></div>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

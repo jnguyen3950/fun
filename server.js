@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var jsonParser = require('body-parser').json();
+var request = require('request');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
 
@@ -40,6 +41,14 @@ app.post('/comments', jsonParser, function(req, res) {
   //   console.log(commentPage);
   });
 });
+
+app.get('/trending', function(req, res) {
+  //Return most popular
+  request('https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=US&key=AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM&maxResults=12&regionCode=US', function (error, response, body) {
+    if (error) return console.log(err);
+    res.send(body);
+  })
+})
 
 
 

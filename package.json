@@ -23,6 +23,7 @@
     "express": "^4.13.4",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.6",
+    "request": "^2.69.0",
     "youtube-comment-api": "^2.1.1",
     "youtube-search": "^1.0.4"
   }
