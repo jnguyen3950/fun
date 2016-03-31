@@ -2,13 +2,10 @@ var fs = require('fs');
 var express = require('express');
 var app = express();
 var jsonParser = require('body-parser').json();
+var cookieParser = require('cookie-parser');
 var request = require('request');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
-
-// app.get('/check', function(req, res) {
-//
-// })
 
 function check(userData, username, password) {
   for (var i = 0; i < userData.length; i++) {
@@ -19,10 +16,18 @@ function check(userData, username, password) {
   return null;
 }
 
-app.post('/login', jsonParser, function(req, res) {
-  console.log(req.body.username);
-  console.log(req.body.password);
+app.use(express.static('./public/'));
 
+app.get('/check', cookieParser(), function(req, res) {
+  if (req.cookies.loggedin == 'true') {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(401);
+  }
+});
+
+app.post('/login', jsonParser, function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) return console.log(err);
     parsedData = JSON.parse(data);
@@ -30,13 +35,19 @@ app.post('/login', jsonParser, function(req, res) {
     var validate = check(parsedData, req.body.username, req.body.password);
     if (validate != null) {
       res.cookie('loggedin', 'true');
-      res.send('success');
+      res.sendStatus(200);
     }
     else {
-      res.send('fail');
+      res.sendStatus(401);
     }
   });
-})
+});
+
+app.get('/logout', function(req, res) {
+  res.clearCookie('id');
+  res.clearCookie('loggedin');
+  res.send();
+});
 
 // var myObject =
 //  [{id: 4312, username: 'guest', password: ''},
@@ -96,11 +107,7 @@ app.get('/trending', function(req, res) {
   request('https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=US&key=AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM&maxResults=12&regionCode=US', function (error, response, body) {
     if (error) return console.log(err);
     res.send(body);
-  })
-})
-
-
-
-app.use(express.static('./'));
+  });
+});
 
 app.listen(8080);

@@ -3,7 +3,9 @@ var tag = document.getElementById('tag');
 var playlistButton = document.getElementById('playlistButton');
 var historyButton = document.getElementById('historyButton');
 var trendingButton = document.getElementById('trendingButton');
+var loginError = document.getElementById('loginError');
 var loginButton = document.getElementById('loginButton');
+var loginSubmitButton = document.getElementById('loginSubmitButton')
 var logoutButton = document.getElementById('logoutButton');
 var sidebar = document.getElementById('sidebar');
 var main = document.getElementById('main');
@@ -40,7 +42,7 @@ playlistButton.addEventListener('click', function() {
   main.classList.toggle('col-md-12');
 })
 
-loginButton.addEventListener('click', function() {
+loginSubmitButton.addEventListener('click', function() {
   var inputUsername = document.getElementById('inputUsername').value;
   var inputPassword = document.getElementById('inputPassword').value;
 
@@ -50,17 +52,52 @@ loginButton.addEventListener('click', function() {
   }
 
   var data = JSON.stringify(loginInfo);
-
   var xhr = new XMLHttpRequest;
   xhr.open('POST', '/login');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(data);
-
   xhr.addEventListener('load', function() {
-    var response = xhr.responseText;
-    console.log(response);
+    var status = xhr.status;
+    if(status == 200) {
+      showLoggedIn();
+    }
+    else {
+      loginError.classList.remove("hidden");
+    }
   })
 })
+
+logoutButton.addEventListener('click', function() {
+  var xhr = new XMLHttpRequest;
+  xhr.open('GET', '/logout');
+  xhr.send();
+  xhr.addEventListener('load', function() {
+    showLoggedOut();
+  })
+});
+
+window.addEventListener('load', function() {
+  var xhr = new XMLHttpRequest;
+  xhr.open('GET', '/check', true);
+  xhr.send();
+  xhr.addEventListener('load', function() {
+    var status = xhr.status;
+    if(status == 200) {
+      showLoggedIn();
+    }
+  })
+})
+
+function showLoggedIn() {
+  loginButton.classList.add("hidden");
+  logoutButton.classList.remove("hidden");
+  loginError.classList.add("hidden");
+}
+
+function showLoggedOut() {
+  loginButton.classList.remove("hidden");
+  logoutButton.classList.add("hidden");
+}
 
 function trendingData() {
   clearResult(trendingResult);
