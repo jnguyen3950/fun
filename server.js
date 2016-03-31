@@ -10,6 +10,15 @@ var fetchCommentPage = require('youtube-comment-api')();
 //
 // })
 
+function check(userData, username, password) {
+  for (var i = 0; i < userData.length; i++) {
+    if (userData[i].username == username && userData[i].password == password) {
+      return userData[i];
+    }
+  }
+  return null;
+}
+
 app.post('/login', jsonParser, function(req, res) {
   console.log(req.body.username);
   console.log(req.body.password);
@@ -17,9 +26,14 @@ app.post('/login', jsonParser, function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) return console.log(err);
     parsedData = JSON.parse(data);
-    for (var i = 1; i < parsedData.length; i++) {
-      console.log(parsedData[i].id);
-      console.log(parsedData[i].password);
+
+    var validate = check(parsedData, req.body.username, req.body.password);
+    if (validate != null) {
+      res.cookie('loggedin', 'true');
+      res.send('success');
+    }
+    else {
+      res.send('fail');
     }
   });
 })

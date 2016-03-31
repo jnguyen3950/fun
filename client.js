@@ -3,6 +3,8 @@ var tag = document.getElementById('tag');
 var playlistButton = document.getElementById('playlistButton');
 var historyButton = document.getElementById('historyButton');
 var trendingButton = document.getElementById('trendingButton');
+var loginButton = document.getElementById('loginButton');
+var logoutButton = document.getElementById('logoutButton');
 var sidebar = document.getElementById('sidebar');
 var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
@@ -36,6 +38,28 @@ playlistButton.addEventListener('click', function() {
   main.classList.toggle('col-md-offset-2');
   main.classList.toggle('col-md-10');
   main.classList.toggle('col-md-12');
+})
+
+loginButton.addEventListener('click', function() {
+  var inputUsername = document.getElementById('inputUsername').value;
+  var inputPassword = document.getElementById('inputPassword').value;
+
+  var loginInfo = {
+    username: inputUsername,
+    password: inputPassword
+  }
+
+  var data = JSON.stringify(loginInfo);
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/login');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(data);
+
+  xhr.addEventListener('load', function() {
+    var response = xhr.responseText;
+    console.log(response);
+  })
 })
 
 function trendingData() {
