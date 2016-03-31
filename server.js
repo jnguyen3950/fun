@@ -6,13 +6,6 @@ var request = require('request');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
 
-var myObject =
- [{id: 4312, username: 'guest', password: ''},
-  {id: 4564, username: 'j', password: 'p'},
-  {id: 9187, username: 'justin', password: 'password'}]
-
-var myData = JSON.stringify(myObject);
-
 // app.get('/check', function(req, res) {
 //
 // })
@@ -30,6 +23,13 @@ app.post('/login', jsonParser, function(req, res) {
     }
   });
 })
+
+// var myObject =
+//  [{id: 4312, username: 'guest', password: ''},
+//   {id: 4564, username: 'j', password: 'p'},
+//   {id: 9187, username: 'justin', password: 'password'}]
+//
+// var myData = JSON.stringify(myObject);
 
 // fs.writeFile('fs/data.txt', myData, function(err) {
 //   if (err) {
