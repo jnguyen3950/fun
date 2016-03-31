@@ -1,9 +1,44 @@
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var jsonParser = require('body-parser').json();
 var request = require('request');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
+
+var myObject =
+ [{id: 4312, username: 'guest', password: ''},
+  {id: 4564, username: 'j', password: 'p'},
+  {id: 9187, username: 'justin', password: 'password'}]
+
+var myData = JSON.stringify(myObject);
+
+// app.get('/check', function(req, res) {
+//
+// })
+
+app.post('/login', jsonParser, function(req, res) {
+  console.log(req.body.username);
+  console.log(req.body.password);
+
+  fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+    if(err) return console.log(err);
+    parsedData = JSON.parse(data);
+    for (var i = 1; i < parsedData.length; i++) {
+      console.log(parsedData[i].id);
+      console.log(parsedData[i].password);
+    }
+  });
+})
+
+// fs.writeFile('fs/data.txt', myData, function(err) {
+//   if (err) {
+//     console.log('There has been an error saving your configuration data.');
+//     console.log(err.message);
+//     return;
+//   }
+//   console.log('Configuration saved successfully.')
+// });
 
 app.post('/search', jsonParser, function(req, res) {
   var opts = {
@@ -28,7 +63,7 @@ app.post('/searchPlaylist', jsonParser, function(req, res) {
     if(err) return console.log(err);
     res.send(results);
   });
-})
+});
 
 app.post('/comments', jsonParser, function(req, res) {
   fetchCommentPage(req.body.dataId).then(function (commentPage) {

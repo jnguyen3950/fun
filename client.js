@@ -3,7 +3,6 @@ var tag = document.getElementById('tag');
 var playlistButton = document.getElementById('playlistButton');
 var historyButton = document.getElementById('historyButton');
 var trendingButton = document.getElementById('trendingButton');
-var recommendButton = document.getElementById('recommendButton');
 var sidebar = document.getElementById('sidebar');
 var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
@@ -72,7 +71,6 @@ function searchData() {
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
     for (var i = 0; i < response.length; i++) {
-      console.log(response[i]);
       link = response[i].link;
       id = response[i].id;
       img = response[i].thumbnails.high.url;
@@ -133,6 +131,10 @@ function attachPlaylistButtonListener() {
 }
 
 function addThumbnail(node, link, id, img, titleText) {
+  var currentRow = document.createElement('div');
+  // currentRow = setAttribute('class', 'row');
+  var blockIndex = 0;
+
   var videoBlock = document.createElement('div');
   var videoThumbnail = document.createElement('div');
   var thumbImage = document.createElement('img');
@@ -161,6 +163,7 @@ function addThumbnail(node, link, id, img, titleText) {
   thumbImage.setAttribute('alt', 'Result video picture.');
   thumbImage.setAttribute('class', 'videoImage');
   caption.setAttribute('class', 'caption');
+  caption.setAttribute('style', 'height: 150px');
   addPlaylist.setAttribute('class', 'btn btn-default playlistButton');
   addPlaylist.setAttribute('role', 'button');
   addPlaylist.setAttribute('data-link', link);
