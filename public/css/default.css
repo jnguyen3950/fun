@@ -1,0 +1,14 @@
+.playlistButton {
+  position: absolute;
+  right: 25px;
+  bottom: 30px;
+}
+
+.alert {
+  padding: 6px 30px 8px 30px;
+}
+
+.alert-danger {
+  height: 50px;
+  margin-bottom: 0px;
+}

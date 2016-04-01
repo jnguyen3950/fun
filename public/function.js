@@ -11,20 +11,22 @@ function showLoggedOut() {
 
 function showHome() {
   playVideo.classList.add("hidden");
-  trendingResult.classList.remove("hidden");
-  searchResult.classList.add("hidden");
-}
-
-function showPlayVideo() {
-  playVideo.classList.remove("hidden");
-  trendingResult.classList.add("hidden");
-  searchResult.classList.add("hidden");
+  trending.classList.remove("hidden");
+  search.classList.add("hidden");
+  player.setAttribute('src', '');
 }
 
 function showSearchResult() {
   playVideo.classList.add("hidden");
-  trendingResult.classList.add("hidden");
-  searchResult.classList.remove('hidden');
+  trending.classList.add("hidden");
+  search.classList.remove('hidden');
+  player.setAttribute('src', '');
+}
+
+function showPlayVideo() {
+  playVideo.classList.remove("hidden");
+  trending.classList.add("hidden");
+  search.classList.add("hidden");
 }
 
 function clearResult(result) {

@@ -1,5 +1,6 @@
 var player = document.getElementById('player');
 var tag = document.getElementById('tag');
+var homeButton = document.getElementById('homeButton');
 var playlistButton = document.getElementById('playlistButton');
 var historyButton = document.getElementById('historyButton');
 var trendingButton = document.getElementById('trendingButton');
@@ -12,18 +13,28 @@ var sidebarPlaylist = document.getElementById('sidebarPlaylist');
 var sidebarHistory = document.getElementById('sidebarHistory');
 var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
-var search = document.getElementById('search');
+var searchButton = document.getElementById('searchButton');
 var searchBox = document.getElementById('searchBox');
+var trending = document.getElementById('trending');
 var trendingResult = document.getElementById('trendingResult');
+var search = document.getElementById('search');
 var searchResult = document.getElementById('searchResult');
 var playVideo = document.getElementById('playVideo');
+var videoTitle = document.getElementById('videoTitle');
 
 var currentDataId;
 
 var playlistArray = [];
 var currentPlaylistIndex = 0;
 
-search.addEventListener('click', function(event) {
+homeButton.addEventListener('click', function(event) {
+  console.log(player.contentWindow);
+  player.contentWindow.event = "command";
+  player.func = "' + 'stopVideo' + ''";
+  player.args = "";
+})
+
+searchButton.addEventListener('click', function(event) {
   searchData();
 })
 
@@ -32,6 +43,7 @@ searchBox.addEventListener('keypress', function(event) {
     searchData();
     event.preventDefault();
   }
+  toggleVideo();
 })
 
 trendingButton.addEventListener('click', function(event) {
@@ -103,11 +115,13 @@ window.addEventListener('load', function() {
     if(status == 200) {
       showLoggedIn();
     }
+    trendingData();
+    showHome();
   });
 });
 
 function trendingData() {
-  clearResult(trendingResult);
+  clearResultExcept(trendingResult, 1);
   var xhr = new XMLHttpRequest;
   xhr.open('GET', '/trending');
   xhr.send();
@@ -136,10 +150,10 @@ function searchData() {
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
     for (var i = 0; i < response.length; i++) {
-      link = response[i].link;
-      id = response[i].id;
-      img = response[i].thumbnails.high.url;
-      title = response[i].title;
+      var link = response[i].link;
+      var id = response[i].id;
+      var img = response[i].thumbnails.high.url;
+      var title = response[i].title;
       addThumbnail(searchResult, link, id, img, title);
     }
     attachThumbnailListener();
@@ -155,10 +169,12 @@ function attachThumbnailListener() {
       currentDataId = event.target.getAttribute('data-id');
       var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
+      link = link + "?autoplay=1";
       player.setAttribute('src', link);
       showPlayVideo();
 
       clearResult(commentNode);
+      clearResult(videoTitle);
       var data = {dataId: currentDataId};
       var xhr = new XMLHttpRequest();
       xhr.open('POST', '/comments');
@@ -166,6 +182,8 @@ function attachThumbnailListener() {
       xhr.send(JSON.stringify(data));
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
+        videoTitle.appendChild(document.createTextNode(response.videoTitle));
+
         var commentArray = response.comments;
         if(commentArray.length > 0) {
           for (var i = 0; i < commentArray.length; i++) {
@@ -224,7 +242,7 @@ function addThumbnail(node, link, id, img, titleText) {
   thumbImage.setAttribute('alt', 'Result video picture.');
   thumbImage.setAttribute('class', 'videoImage');
   caption.setAttribute('class', 'caption');
-  caption.setAttribute('style', 'height: 150px');
+  caption.setAttribute('style', 'height: 120px');
   addPlaylist.setAttribute('class', 'btn btn-default playlistButton');
   addPlaylist.setAttribute('role', 'button');
   addPlaylist.setAttribute('data-link', link);

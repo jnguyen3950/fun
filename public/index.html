@@ -22,7 +22,7 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li id="homeBtn" class="active" ><a href="#">Home</a></li>
+          <li id="homeButton" class="active" ><a href="#">Home</a></li>
           <li id="playlistButton"><a href="#">Playlist</a></li>
           <li id='historyButton'><a href="#">History</a></li>
           <li id='trendingButton'><a href="#">Trending</a></li>
@@ -31,14 +31,14 @@
               <div class="form-group">
                 <input id="searchBox" type="text" class="form-control" placeholder="Batman, Superman, Fun, ...">
               </div>
-              <input id="search" type="button" class="btn btn-default" value="Search"></input>
+              <input id="searchButton" type="button" class="btn btn-default" value="Search"></input>
             </form>
           </li>
         </ul>
         <ul class="nav navbar-nav pull-right">
           <li>
-            <div id='loginError' class="hidden">
-              <h5>Sorry, your login commbination is incorrect. </h5>
+            <div id='loginError' class="hidden alert alert-danger" role="alert">
+              <h5>Sorry, your login combination is incorrect. </h5>
             </div>
           </li>
           <li id='loginButton' class="dropdown pull-right active">
@@ -72,15 +72,37 @@
     </div>
 
     <div id="main" class="col-md-12">
-      <div id="trendingResult" class="container"></div>
-      <div id="searchResult" class="container"></div>
-      <div id="playVideo" class="container hidden">
-        <div class="embed-responsive embed-responsive-16by9">
-          <iframe id="player" class="embed-responsive-item"></iframe>
+      <div id="trending" class="container">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Trending</h3>
+          </div>
+          <div id="trendingResult" class="panel-body">
+          </div>
         </div>
-        <div id="tag"></div>
-        <!-- <input id="commentButton" type="button" class="btn btn-default" value="Show comments"></input> -->
-        <div id="comment"></div>
+      </div>
+      <div id="search" class="container hidden">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Search result</h3>
+          </div>
+          <div id="searchResult" class="panel-body">
+          </div>
+        </div>
+      </div>
+      <div id="playVideo" class="container hidden">
+        <div class="col-md-10 col-md-offset-1">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h2 id="videoTitle" class="panel-title"></h3>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe id="player" class="embed-responsive-item" frameborder="10" allowfullscreen></iframe>
+            </div>
+            <div id="tag"></div>
+            <div id="comment" class="panel-body"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
