@@ -15,6 +15,8 @@ var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
 var searchButton = document.getElementById('searchButton');
 var searchBox = document.getElementById('searchBox');
+var recommend = document.getElementById('recommend');
+var recommendResult = document.getElementById('recommendResult');
 var trending = document.getElementById('trending');
 var trendingResult = document.getElementById('trendingResult');
 var search = document.getElementById('search');
@@ -27,13 +29,6 @@ var currentDataId;
 var playlistArray = [];
 var currentPlaylistIndex = 0;
 
-homeButton.addEventListener('click', function(event) {
-  console.log(player.contentWindow);
-  player.contentWindow.event = "command";
-  player.func = "' + 'stopVideo' + ''";
-  player.args = "";
-})
-
 searchButton.addEventListener('click', function(event) {
   searchData();
 })
@@ -43,11 +38,16 @@ searchBox.addEventListener('keypress', function(event) {
     searchData();
     event.preventDefault();
   }
-  toggleVideo();
+})
+
+homeButton.addEventListener('click', function(event) {
+  recommendData();
+  showHome();
 })
 
 trendingButton.addEventListener('click', function(event) {
   trendingData();
+  showTrending();
 })
 
 historyButton.addEventListener('click', function() {
@@ -115,29 +115,50 @@ window.addEventListener('load', function() {
     if(status == 200) {
       showLoggedIn();
     }
+    recommendData();
     trendingData();
     showHome();
   });
 });
 
+function recommendData() {
+  clearResult(recommendResult);
+  var xhr = new XMLHttpRequest;
+  xhr.open('GET', '/related');
+  xhr.send();
+  xhr.addEventListener('load', function(event) {
+    var response = JSON.parse(xhr.responseText);
+    var items = response.items;
+    for (var i = 0; i < items.length; i++) {
+      var id = items[i].id.videoId;
+      var link = "https://www.youtube.com/watch?v=" + id;
+      var img = items[i].snippet.thumbnails.high.url;
+      var title = items[i].snippet.title;
+      addThumbnail(recommendResult, link, id, img, title);
+    }
+    attachThumbnailListener();
+    attachPlaylistButtonListener();
+  })
+};
+
 function trendingData() {
-  clearResultExcept(trendingResult, 1);
+  clearResult(trendingResult);
   var xhr = new XMLHttpRequest;
   xhr.open('GET', '/trending');
   xhr.send();
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
-    for (var i = 0; i < response.items.length; i++) {
-      var link = "https://www.youtube.com/watch?v=" + response.items[i].id;
-      var id = response.items[i].id;
-      var img = response.items[i].snippet.thumbnails.high.url;
-      var title = response.items[i].snippet.title;
+    var items = response.items;
+    for (var i = 0; i < items.length; i++) {
+      var id = items[i].id;
+      var link = "https://www.youtube.com/watch?v=" + id;
+      var img = items[i].snippet.thumbnails.high.url;
+      var title = items[i].snippet.title;
       addThumbnail(trendingResult, link, id, img, title);
     }
     attachThumbnailListener();
     attachPlaylistButtonListener();
   })
-  showHome();
 };
 
 function searchData() {

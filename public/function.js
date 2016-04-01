@@ -11,6 +11,15 @@ function showLoggedOut() {
 
 function showHome() {
   playVideo.classList.add("hidden");
+  recommend.classList.remove("hidden");
+  trending.classList.remove("hidden");
+  search.classList.add("hidden");
+  player.setAttribute('src', '');
+}
+
+function showTrending() {
+  playVideo.classList.add("hidden");
+  recommend.classList.add("hidden");
   trending.classList.remove("hidden");
   search.classList.add("hidden");
   player.setAttribute('src', '');
@@ -18,6 +27,7 @@ function showHome() {
 
 function showSearchResult() {
   playVideo.classList.add("hidden");
+  recommend.classList.add("hidden");
   trending.classList.add("hidden");
   search.classList.remove('hidden');
   player.setAttribute('src', '');
@@ -25,18 +35,14 @@ function showSearchResult() {
 
 function showPlayVideo() {
   playVideo.classList.remove("hidden");
+  recommend.classList.add("hidden");
   trending.classList.add("hidden");
   search.classList.add("hidden");
 }
 
-function clearResult(result) {
-  while(result.firstChild) {
-    result.removeChild(result.firstChild);
-  }
-}
-
-function clearResultExcept(result, num) {
-  while(result.childNodes.length > num) {
+function clearResult(result, num) {
+  this.num = num || 1;
+  while(result.childNodes.length > this.num) {
     result.removeChild(result.lastChild);
   }
 }
