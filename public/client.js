@@ -8,12 +8,15 @@ var loginButton = document.getElementById('loginButton');
 var loginSubmitButton = document.getElementById('loginSubmitButton')
 var logoutButton = document.getElementById('logoutButton');
 var sidebar = document.getElementById('sidebar');
+var sidebarPlaylist = document.getElementById('sidebarPlaylist');
+var sidebarHistory = document.getElementById('sidebarHistory');
 var main = document.getElementById('main');
 var commentNode = document.getElementById('comment');
 var search = document.getElementById('search');
 var searchBox = document.getElementById('searchBox');
 var trendingResult = document.getElementById('trendingResult');
 var searchResult = document.getElementById('searchResult');
+var playVideo = document.getElementById('playVideo');
 
 var currentDataId;
 
@@ -35,11 +38,26 @@ trendingButton.addEventListener('click', function(event) {
   trendingData();
 })
 
+historyButton.addEventListener('click', function() {
+  if(!sidebarHistory.classList.contains('hidden')) {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('col-md-offset-2');
+    main.classList.toggle('col-md-10');
+    main.classList.toggle('col-md-12');
+  }
+  sidebarHistory.classList.remove('hidden');
+  sidebarPlaylist.classList.add('hidden');
+})
+
 playlistButton.addEventListener('click', function() {
-  sidebar.classList.toggle('hidden');
-  main.classList.toggle('col-md-offset-2');
-  main.classList.toggle('col-md-10');
-  main.classList.toggle('col-md-12');
+  if(!sidebarPlaylist.classList.contains('hidden')) {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('col-md-offset-2');
+    main.classList.toggle('col-md-10');
+    main.classList.toggle('col-md-12');
+  }
+  sidebarPlaylist.classList.remove('hidden');
+  sidebarHistory.classList.add('hidden');
 })
 
 loginSubmitButton.addEventListener('click', function() {
@@ -78,34 +96,21 @@ logoutButton.addEventListener('click', function() {
 
 window.addEventListener('load', function() {
   var xhr = new XMLHttpRequest;
-  xhr.open('GET', '/check', true);
+  xhr.open('GET', '/loggedin', true);
   xhr.send();
   xhr.addEventListener('load', function() {
     var status = xhr.status;
     if(status == 200) {
       showLoggedIn();
     }
-  })
-})
-
-function showLoggedIn() {
-  loginButton.classList.add("hidden");
-  logoutButton.classList.remove("hidden");
-  loginError.classList.add("hidden");
-}
-
-function showLoggedOut() {
-  loginButton.classList.remove("hidden");
-  logoutButton.classList.add("hidden");
-}
+  });
+});
 
 function trendingData() {
   clearResult(trendingResult);
-
   var xhr = new XMLHttpRequest;
   xhr.open('GET', '/trending');
   xhr.send();
-
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
     for (var i = 0; i < response.items.length; i++) {
@@ -118,17 +123,16 @@ function trendingData() {
     attachThumbnailListener();
     attachPlaylistButtonListener();
   })
-}
+  showHome();
+};
 
 function searchData() {
   clearResult(searchResult);
-
   var data = {term: searchBox.value};
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/search');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(data));
-
   xhr.addEventListener('load', function() {
     var response = JSON.parse(xhr.responseText);
     for (var i = 0; i < response.length; i++) {
@@ -141,6 +145,7 @@ function searchData() {
     attachThumbnailListener();
     attachPlaylistButtonListener();
   })
+  showSearchResult();
 }
 
 function attachThumbnailListener() {
@@ -151,15 +156,14 @@ function attachThumbnailListener() {
       var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       player.setAttribute('src', link);
+      showPlayVideo();
 
       clearResult(commentNode);
-
       var data = {dataId: currentDataId};
       var xhr = new XMLHttpRequest();
       xhr.open('POST', '/comments');
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.send(JSON.stringify(data));
-
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
         var commentArray = response.comments;
@@ -192,15 +196,11 @@ function attachPlaylistButtonListener() {
 }
 
 function addThumbnail(node, link, id, img, titleText) {
-  var currentRow = document.createElement('div');
-  // currentRow = setAttribute('class', 'row');
-  var blockIndex = 0;
-
   var videoBlock = document.createElement('div');
   var videoThumbnail = document.createElement('div');
   var thumbImage = document.createElement('img');
   var caption = document.createElement('div');
-  var title = document.createElement('h4');
+  var title = document.createElement('h5');
   var titleTextNode = document.createTextNode(titleText);
   var description = document.createElement('p');
   var addPlaylist = document.createElement('a');
@@ -240,18 +240,17 @@ function showPlaylist(playlistArray) {
     xhr.open('POST', 'searchPlaylist');
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(JSON.stringify(data));
-
     xhr.addEventListener('load', function() {
       var response = JSON.parse(xhr.response);
 
-      var sidebarList = document.getElementById('sidebarList');
+      var sidebarPlaylist = document.getElementById('sidebarPlaylist');
       var videoBlock = document.createElement('div');
       var videoThumbnail = document.createElement('div');
       var thumbImage = document.createElement('img');
       var caption = document.createElement('div');
       var title = document.createElement('h2');
 
-      sidebarList.appendChild(videoBlock);
+      sidebarPlaylist.appendChild(videoBlock);
       videoBlock.appendChild(videoThumbnail);
       videoThumbnail.appendChild(thumbImage);
       videoThumbnail.appendChild(caption);
@@ -304,12 +303,6 @@ function addCommentMedia(array, node) {
     for (var i = 0; i < array.replies.length; i++) {
       addCommentMedia(array.replies[i], mediaBody);
     }
-  }
-}
-
-function clearResult(result) {
-  while(result.firstChild) {
-    result.removeChild(result.firstChild);
   }
 }
 

@@ -36,7 +36,11 @@
           </li>
         </ul>
         <ul class="nav navbar-nav pull-right">
-          <li id='loginError' class="hidden"><h5>Sorry, your login commbination is incorrect. </h5></li>
+          <li>
+            <div id='loginError' class="hidden">
+              <h5>Sorry, your login commbination is incorrect. </h5>
+            </div>
+          </li>
           <li id='loginButton' class="dropdown pull-right active">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Log in</span></a>
             <ul class="dropdown-menu" role="menu">
@@ -58,20 +62,21 @@
   <!-- End navbar -->
 
   <div class="container-fluid">
-    <div id="sidebar" class="col-md-2 sidebar hidden-sm">
-      <ul id="sidebarList" class="nav nav-sidebar navbar-fixed">
+    <div id="sidebar" class="col-md-2 sidebar hidden-sm hidden">
+      <ul id="sidebarPlaylist" class="nav nav-sidebar navbar-fixed">
         <li class="active"><a href="#">Playlist</span></a></li>
+      </ul>
+      <ul id="sidebarHistory" class="nav nav-sidebar navbar-fixed">
+        <li class="active"><a href="#">History</span></a></li>
       </ul>
     </div>
 
-    <div id="main" class="col-md-10 col-md-offset-2">
+    <div id="main" class="col-md-12">
       <div id="trendingResult" class="container"></div>
-
       <div id="searchResult" class="container"></div>
-
-      <div id="playVideo" class="container">
+      <div id="playVideo" class="container hidden">
         <div class="embed-responsive embed-responsive-16by9">
-          <iframe id="player" class="embed-responsive-item" src="https://www.youtube.com/v/fNS4lecOaAc"></iframe>
+          <iframe id="player" class="embed-responsive-item"></iframe>
         </div>
         <div id="tag"></div>
         <!-- <input id="commentButton" type="button" class="btn btn-default" value="Show comments"></input> -->
@@ -80,11 +85,10 @@
     </div>
   </div>
 
-  <div id="videos"></div>
-
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="client.js"></script>
+  <script src="function.js"></script>
 </body>
 </html>

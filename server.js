@@ -18,7 +18,7 @@ function check(userData, username, password) {
 
 app.use(express.static('./public/'));
 
-app.get('/check', cookieParser(), function(req, res) {
+app.get('/loggedin', cookieParser(), function(req, res) {
   if (req.cookies.loggedin == 'true') {
     res.sendStatus(200);
   }
