@@ -4,6 +4,10 @@
   bottom: 30px;
 }
 
+.panel-heading {
+  height: 50px;
+}
+
 .alert {
   padding: 6px 30px 8px 30px;
 }

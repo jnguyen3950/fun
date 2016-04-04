@@ -41,7 +41,7 @@ function showPlayVideo() {
 }
 
 function clearResult(result, num) {
-  this.num = num || 1;
+  this.num = num || 0;
   while(result.childNodes.length > this.num) {
     result.removeChild(result.lastChild);
   }

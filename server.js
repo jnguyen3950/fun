@@ -5,6 +5,7 @@ var jsonParser = require('body-parser').json();
 var cookieParser = require('cookie-parser');
 var querystring = require('querystring');
 var request = require('request');
+var async = require('async');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
 
@@ -13,28 +14,13 @@ var key = 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM';
 function check(userData, username, password) {
   for (var i = 0; i < userData.length; i++) {
     if (userData[i].username == username && userData[i].password == password) {
-      return userData[i];
+      return userData[i].id;
     }
   }
   return null;
 }
 
 app.use(express.static('./public/'));
-
-app.get('/related', function(req, res) {
-  var queryParam = {
-    part: 'snippet',
-    maxResults: 4,
-    type: 'video',
-    relatedToVideoId: 'DPEJB-FCItk',
-    key: key
-  }
-
-  request('https://www.googleapis.com/youtube/v3/search?' + querystring.stringify(queryParam), function (error, response, body) {
-    if (err) return console.log(err);
-    res.send(body);
-  });
-})
 
 app.get('/loggedin', cookieParser(), function(req, res) {
   if (req.cookies.loggedin == 'true') {
@@ -47,12 +33,13 @@ app.get('/loggedin', cookieParser(), function(req, res) {
 
 app.post('/login', jsonParser, function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
-    if(err) return console.log(err);
-    parsedData = JSON.parse(data);
+    if(err) res.send(err);
+    var parsedData = JSON.parse(data);
 
-    var validate = check(parsedData, req.body.username, req.body.password);
-    if (validate != null) {
+    var validateId = check(parsedData, req.body.username, req.body.password);
+    if (validateId != null) {
       res.cookie('loggedin', 'true');
+      res.cookie('id', validateId);
       res.sendStatus(200);
     }
     else {
@@ -92,7 +79,7 @@ app.post('/search', jsonParser, function(req, res) {
   };
 
   search(req.body.term, opts, function(err, results) {
-    if(err) return console.log(err);
+    if(err) res.send(err);
     res.send(results);
   });
 });
@@ -103,10 +90,38 @@ app.post('/searchPlaylist', jsonParser, function(req, res) {
   };
 
   search(req.body.dataId, opts, function(err, results) {
-    if(err) return console.log(err);
+    if(err) res.send(err);
     res.send(results);
   });
 });
+
+app.get('/recommend', cookieParser(), function(req, res) {
+  fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+    if(err) res.send(err);
+    var parsedData = JSON.parse(data);
+    for (var i = 0; i < parsedData.length; i++) {
+      if (req.cookies.id == parsedData[i].id) {
+        var watchedId = parsedData[i].watchedId;
+      }
+    }
+    res.send(watchedId);
+  });
+});
+
+app.post('/searchRecommend', jsonParser, function(req, res) {
+  var queryParam = {
+    part: 'snippet',
+    maxResults: 1,
+    type: 'video',
+    relatedToVideoId: req.body.watchedId,
+    key: key
+  }
+
+  request('https://www.googleapis.com/youtube/v3/search?' + querystring.stringify(queryParam), function (err, response, body) {
+    if (err) res.send(err);
+    res.send(body);
+  });
+})
 
 app.post('/comments', jsonParser, function(req, res) {
   fetchCommentPage(req.body.dataId).then(function (commentPage) {
@@ -130,8 +145,8 @@ app.get('/trending', function(req, res) {
     key: key
   }
 
-  request('https://www.googleapis.com/youtube/v3/videos?' + querystring.stringify(queryParam), function (error, response, body) {
-    if (err) return console.log(err);
+  request('https://www.googleapis.com/youtube/v3/videos?' + querystring.stringify(queryParam), function (err, response, body) {
+    if (err) res.send(err);
     res.send(body);
   });
 });

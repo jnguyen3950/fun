@@ -123,18 +123,38 @@ window.addEventListener('load', function() {
 
 function recommendData() {
   clearResult(recommendResult);
-  var xhr = new XMLHttpRequest;
-  xhr.open('GET', '/related');
-  xhr.send();
-  xhr.addEventListener('load', function(event) {
-    var response = JSON.parse(xhr.responseText);
-    var items = response.items;
-    for (var i = 0; i < items.length; i++) {
-      var id = items[i].id.videoId;
+  var response;
+  var promise = new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest;
+    xhr.open('GET', '/recommend');
+    xhr.send();
+    xhr.addEventListener('load', function() {
+      response = JSON.parse(xhr.responseText);
+      resolve(response);
+    });
+  });
+
+  promise.then(function(value) {
+    console.log(value);
+    showPlaylist(value);
+    for (var i = 0; i < value.length; i++) {
+    var data = {watchedId: value[i]};
+    console.log(value[i]);
+    var searchXhr = new XMLHttpRequest;
+    searchXhr.open('POST', '/searchRecommend');
+    searchXhr.setRequestHeader('Content-type', 'application/json');
+    searchXhr.send(JSON.stringify(data));
+    searchXhr.addEventListener('load', function() {
+      var searchResponse = JSON.parse(searchXhr.responseText);
+      console.log(searchResponse);
+      var items = searchResponse.items;
+      console.log(searchResponse.items);
+      var id = items[0].id.videoId;
       var link = "https://www.youtube.com/watch?v=" + id;
-      var img = items[i].snippet.thumbnails.high.url;
-      var title = items[i].snippet.title;
+      var img = items[0].snippet.thumbnails.high.url;
+      var title = items[0].snippet.title;
       addThumbnail(recommendResult, link, id, img, title);
+    })
     }
     attachThumbnailListener();
     attachPlaylistButtonListener();
