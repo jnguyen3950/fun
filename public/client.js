@@ -135,26 +135,26 @@ function recommendData() {
   });
 
   promise.then(function(value) {
-    console.log(value);
     showPlaylist(value);
     for (var i = 0; i < value.length; i++) {
-    var data = {watchedId: value[i]};
-    console.log(value[i]);
-    var searchXhr = new XMLHttpRequest;
-    searchXhr.open('POST', '/searchRecommend');
-    searchXhr.setRequestHeader('Content-type', 'application/json');
-    searchXhr.send(JSON.stringify(data));
-    searchXhr.addEventListener('load', function() {
-      var searchResponse = JSON.parse(searchXhr.responseText);
-      console.log(searchResponse);
-      var items = searchResponse.items;
-      console.log(searchResponse.items);
-      var id = items[0].id.videoId;
-      var link = "https://www.youtube.com/watch?v=" + id;
-      var img = items[0].snippet.thumbnails.high.url;
-      var title = items[0].snippet.title;
-      addThumbnail(recommendResult, link, id, img, title);
-    })
+      var morePromise = new Promise(function(resolve, reject) {
+        var data = {watchedId: value[i]};
+        var searchXhr = new XMLHttpRequest;
+        searchXhr.open('POST', '/searchRecommend');
+        searchXhr.setRequestHeader('Content-type', 'application/json');
+        searchXhr.send(JSON.stringify(data));
+        searchXhr.addEventListener('load', function() {
+          var searchResponse = JSON.parse(searchXhr.responseText);
+          resolve(searchResponse.items);
+        })
+      })
+      morePromise.then(function(items) {
+        var id = items[0].id.videoId;
+        var link = "https://www.youtube.com/watch?v=" + id;
+        var img = items[0].snippet.thumbnails.high.url;
+        var title = items[0].snippet.title;
+        addThumbnail(recommendResult, link, id, img, title);
+      });
     }
     attachThumbnailListener();
     attachPlaylistButtonListener();
