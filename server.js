@@ -5,7 +5,6 @@ var jsonParser = require('body-parser').json();
 var cookieParser = require('cookie-parser');
 var querystring = require('querystring');
 var request = require('request');
-var async = require('async');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
 
@@ -86,6 +85,7 @@ app.post('/search', jsonParser, function(req, res) {
 
 app.post('/searchPlaylist', jsonParser, function(req, res) {
   var opts = {
+    maxResults: 1,
     key: key
   };
 
@@ -95,7 +95,7 @@ app.post('/searchPlaylist', jsonParser, function(req, res) {
   });
 });
 
-app.get('/recommend', cookieParser(), function(req, res) {
+app.get('/history', cookieParser(), function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) res.send(err);
     var parsedData = JSON.parse(data);

@@ -11,7 +11,6 @@ function showLoggedOut() {
 
 function showHome() {
   playVideo.classList.add("hidden");
-  recommend.classList.remove("hidden");
   trending.classList.remove("hidden");
   search.classList.add("hidden");
   player.setAttribute('src', '');
@@ -31,6 +30,14 @@ function showSearchResult() {
   trending.classList.add("hidden");
   search.classList.remove('hidden');
   player.setAttribute('src', '');
+}
+
+function showRecommendVideo() {
+  recommend.classList.remove("hidden");
+}
+
+function hideRecommendVideo() {
+  recommend.classList.add("hidden");
 }
 
 function showPlayVideo() {

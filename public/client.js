@@ -24,8 +24,8 @@ var searchResult = document.getElementById('searchResult');
 var playVideo = document.getElementById('playVideo');
 var videoTitle = document.getElementById('videoTitle');
 
+var loginStatus;
 var currentDataId;
-
 var playlistArray = [];
 var currentPlaylistIndex = 0;
 
@@ -41,7 +41,10 @@ searchBox.addEventListener('keypress', function(event) {
 })
 
 homeButton.addEventListener('click', function(event) {
-  recommendData();
+  if(loginStatus == 200) {
+    recommendData();
+    showRecommendVideo();
+  }
   showHome();
 })
 
@@ -87,9 +90,12 @@ loginSubmitButton.addEventListener('click', function() {
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(data);
   xhr.addEventListener('load', function() {
-    var status = xhr.status;
-    if(status == 200) {
+    var loginStatus = xhr.status;
+    if(loginStatus == 200) {
       showLoggedIn();
+      recommendData();
+      showRecommendVideo();
+      showHistory();
     }
     else {
       loginError.classList.remove("hidden");
@@ -103,6 +109,9 @@ logoutButton.addEventListener('click', function() {
   xhr.send();
   xhr.addEventListener('load', function() {
     showLoggedOut();
+    clearResult(recommendResult);
+    hideRecommendVideo();
+    clearResult(sidebarHistory);
   })
 });
 
@@ -111,11 +120,13 @@ window.addEventListener('load', function() {
   xhr.open('GET', '/loggedin', true);
   xhr.send();
   xhr.addEventListener('load', function() {
-    var status = xhr.status;
-    if(status == 200) {
+    var loginStatus = xhr.status;
+    if(loginStatus == 200) {
       showLoggedIn();
+      recommendData();
+      showRecommendVideo();
+      showHistory();
     }
-    recommendData();
     trendingData();
     showHome();
   });
@@ -126,7 +137,7 @@ function recommendData() {
   var response;
   var promise = new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest;
-    xhr.open('GET', '/recommend');
+    xhr.open('GET', '/history');
     xhr.send();
     xhr.addEventListener('load', function() {
       response = JSON.parse(xhr.responseText);
@@ -135,7 +146,6 @@ function recommendData() {
   });
 
   promise.then(function(value) {
-    showPlaylist(value);
     for (var i = 0; i < value.length; i++) {
       var morePromise = new Promise(function(resolve, reject) {
         var data = {watchedId: value[i]};
@@ -295,13 +305,18 @@ function showPlaylist(playlistArray) {
   while (currentPlaylistIndex < playlistArray.length) {
     var data = {dataId: playlistArray[currentPlaylistIndex]};
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'searchPlaylist');
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.send(JSON.stringify(data));
-    xhr.addEventListener('load', function() {
-      var response = JSON.parse(xhr.response);
+    var promise = new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/searchPlaylist');
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.send(JSON.stringify(data));
+      xhr.addEventListener('load', function() {
+        var response = JSON.parse(xhr.response);
+        resolve(response);
+      })
+    })
 
+    promise.then(function(response) {
       var sidebarPlaylist = document.getElementById('sidebarPlaylist');
       var videoBlock = document.createElement('div');
       var videoThumbnail = document.createElement('div');
@@ -331,6 +346,63 @@ function showPlaylist(playlistArray) {
     })
     currentPlaylistIndex++;
   }
+}
+
+function showHistory() {
+  var promise = new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest;
+    xhr.open('GET', '/history');
+    xhr.send();
+    xhr.addEventListener('load', function() {
+      response = JSON.parse(xhr.responseText);
+      resolve(response);
+    });
+  })
+
+  promise.then(function(response) {
+    for (var i = 0; i < response.length; i++) {
+      var morePromise = new Promise(function(resolve, reject) {
+        var data = {dataId: response[i]};
+        var searchXhr = new XMLHttpRequest;
+        searchXhr.open('POST', '/searchPlaylist');
+        searchXhr.setRequestHeader('Content-type', 'application/json');
+        searchXhr.send(JSON.stringify(data));
+        searchXhr.addEventListener('load', function() {
+          var searchResponse = JSON.parse(searchXhr.responseText);
+          resolve(searchResponse[0]);
+        })
+      })
+      morePromise.then(function(item) {
+        var id = item.id;
+        var link = "https://www.youtube.com/watch?v=" + id;
+        var img = item.thumbnails.high.url;
+        var title = item.title;
+
+        var sidebarPlaylist = document.getElementById('sidebarHistory');
+        var videoBlock = document.createElement('div');
+        var videoThumbnail = document.createElement('div');
+        var thumbImage = document.createElement('img');
+        var caption = document.createElement('div');
+        var title = document.createElement('h2');
+
+        sidebarPlaylist.appendChild(videoBlock);
+        videoBlock.appendChild(videoThumbnail);
+        videoThumbnail.appendChild(thumbImage);
+        videoThumbnail.appendChild(caption);
+        caption.appendChild(title);
+
+        videoThumbnail.setAttribute('class', 'thumbnail');
+        thumbImage.setAttribute('data-link', link);
+        thumbImage.setAttribute('data-id', id);
+        thumbImage.setAttribute('src', img);
+        thumbImage.setAttribute('alt', 'Result video picture.');
+        thumbImage.setAttribute('class', 'videoImage');
+        caption.setAttribute('class', 'caption');
+
+        attachThumbnailListener();
+      });
+    }
+  });
 }
 
 function addCommentMedia(array, node) {
