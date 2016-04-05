@@ -79,6 +79,34 @@ app.post('/searchPlaylist', jsonParser, function(req, res) {
   });
 });
 
+app.post('/writePlaylist', jsonParser, function(req, res) {
+  var promise = new Promise(function(resolve, reject) {
+    fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+      if(err) res.send(err);
+      var parsedData = JSON.parse(data);
+      resolve(parsedData);
+    });
+  });
+  promise.then(function(value) {
+    for (var i = 0; i < value.length; i++) {
+      if (value[i].id == req.cookies.id) {
+        value[i].playlist.push(req.body.playlist);
+        value[i].playlist = _.uniq(value[i].playlist);
+      }
+    }
+
+    var myData = JSON.stringify(value);
+    fs.writeFile('fs/data.txt', myData, function(err) {
+      if (err) {
+        console.log('There has been an error saving your playlist data.');
+        console.log(err.message);
+        return;
+      }
+      console.log('Playlist saved successfully.')
+    });
+  });
+});
+
 app.get('/history', cookieParser(), function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) res.send(err);
@@ -120,11 +148,11 @@ app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
     var myData = JSON.stringify(value);
     fs.writeFile('fs/data.txt', myData, function(err) {
       if (err) {
-        console.log('There has been an error saving your configuration data.');
+        console.log('There has been an error saving your history data.');
         console.log(err.message);
         return;
       }
-      console.log('Configuration saved successfully.')
+      console.log('History saved successfully.')
     });
   });
 });
