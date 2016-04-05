@@ -133,7 +133,10 @@ function recommendData() {
   });
 
   promise.then(function(value) {
-    for (var i = 0; i < value.length; i++) {
+    var maxResult = 8;
+    value = _.shuffle(value);
+    if (value.length < maxResult) maxResult = value.length;
+    for (var i = 0; i < maxResult; i++) {
       var morePromise = new Promise(function(resolve, reject) {
         var data = {watchedId: value[i]};
         var searchXhr = new XMLHttpRequest;
