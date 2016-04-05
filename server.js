@@ -53,22 +53,6 @@ app.get('/logout', function(req, res) {
   res.send();
 });
 
-// var myObject =
-//  [{id: 4312, username: 'guest', password: '', watchedId: ['DPEJB-FCItk', 'VO-1ePYypdU']},
-//   {id: 4564, username: 'j', password: 'p', watchedId: ['DPEJB-FCItk', 'VO-1ePYypdU']},
-//   {id: 9187, username: 'justin', password: 'password', watchedId: ['DPEJB-FCItk', 'VO-1ePYypdU']}]
-//
-// var myData = JSON.stringify(myObject);
-//
-// fs.writeFile('fs/data.txt', myData, function(err) {
-//   if (err) {
-//     console.log('There has been an error saving your configuration data.');
-//     console.log(err.message);
-//     return;
-//   }
-//   console.log('Configuration saved successfully.')
-// });
-
 app.post('/search', jsonParser, function(req, res) {
   var opts = {
     maxResults: 12,
@@ -105,6 +89,43 @@ app.get('/history', cookieParser(), function(req, res) {
       }
     }
     res.send(watchedId);
+  });
+});
+
+app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
+  var promise = new Promise(function(resolve, reject) {
+    fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+      if(err) res.send(err);
+      var parsedData = JSON.parse(data);
+      resolve(parsedData);
+    });
+  })
+
+  promise.then(function(value) {
+    for (var i = 0; i < value.length; i++) {
+      if (value[i].id == req.cookies.id) {
+        var watchedBefore = false;
+        for (var j = 0; j < value[i].watchedId.length; j++) {
+          if(value[i].watchedId[j] == req.body.videoId) {
+            watchedBefore = true;
+          }
+        }
+        if(!watchedBefore) {
+          value[i].watchedId.push(req.body.videoId);
+          value[i].thumb.push(req.body.thumb);
+        }
+      }
+    }
+
+    var myData = JSON.stringify(value);
+    fs.writeFile('fs/data.txt', myData, function(err) {
+      if (err) {
+        console.log('There has been an error saving your configuration data.');
+        console.log(err.message);
+        return;
+      }
+      console.log('Configuration saved successfully.')
+    });
   });
 });
 

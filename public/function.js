@@ -16,6 +16,28 @@ function showHome() {
   player.setAttribute('src', '');
 }
 
+function showPlaylist() {
+  if(!sidebarPlaylist.classList.contains('hidden')) {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('col-md-offset-2');
+    main.classList.toggle('col-md-10');
+    main.classList.toggle('col-md-12');
+  }
+  sidebarPlaylist.classList.remove('hidden');
+  sidebarHistory.classList.add('hidden');
+}
+
+function showHistory() {
+  if(!sidebarHistory.classList.contains('hidden')) {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('col-md-offset-2');
+    main.classList.toggle('col-md-10');
+    main.classList.toggle('col-md-12');
+  }
+  sidebarHistory.classList.remove('hidden');
+  sidebarPlaylist.classList.add('hidden');
+}
+
 function showTrending() {
   playVideo.classList.add("hidden");
   recommend.classList.add("hidden");

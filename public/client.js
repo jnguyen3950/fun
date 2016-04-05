@@ -25,7 +25,8 @@ var playVideo = document.getElementById('playVideo');
 var videoTitle = document.getElementById('videoTitle');
 
 var loginStatus;
-var currentDataId;
+var currentUserId;
+var currentVideoId;
 var playlistArray = [];
 var currentPlaylistIndex = 0;
 
@@ -54,25 +55,11 @@ trendingButton.addEventListener('click', function(event) {
 })
 
 historyButton.addEventListener('click', function() {
-  if(!sidebarHistory.classList.contains('hidden')) {
-    sidebar.classList.toggle('hidden');
-    main.classList.toggle('col-md-offset-2');
-    main.classList.toggle('col-md-10');
-    main.classList.toggle('col-md-12');
-  }
-  sidebarHistory.classList.remove('hidden');
-  sidebarPlaylist.classList.add('hidden');
+  showHistory();
 })
 
 playlistButton.addEventListener('click', function() {
-  if(!sidebarPlaylist.classList.contains('hidden')) {
-    sidebar.classList.toggle('hidden');
-    main.classList.toggle('col-md-offset-2');
-    main.classList.toggle('col-md-10');
-    main.classList.toggle('col-md-12');
-  }
-  sidebarPlaylist.classList.remove('hidden');
-  sidebarHistory.classList.add('hidden');
+  showPlaylist();
 })
 
 loginSubmitButton.addEventListener('click', function() {
@@ -93,9 +80,9 @@ loginSubmitButton.addEventListener('click', function() {
     var loginStatus = xhr.status;
     if(loginStatus == 200) {
       showLoggedIn();
+      historyData();
       recommendData();
       showRecommendVideo();
-      showHistory();
     }
     else {
       loginError.classList.remove("hidden");
@@ -123,9 +110,9 @@ window.addEventListener('load', function() {
     var loginStatus = xhr.status;
     if(loginStatus == 200) {
       showLoggedIn();
+      historyData();
       recommendData();
       showRecommendVideo();
-      showHistory();
     }
     trendingData();
     showHome();
@@ -217,7 +204,10 @@ function attachThumbnailListener() {
   var nodeList = document.getElementsByClassName('videoImage');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
-      currentDataId = event.target.getAttribute('data-id');
+
+      currentVideoId = event.target.getAttribute('data-id');
+      writeHistory(currentVideoId)
+
       var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       link = link + "?autoplay=1";
@@ -226,7 +216,7 @@ function attachThumbnailListener() {
 
       clearResult(commentNode);
       clearResult(videoTitle);
-      var data = {dataId: currentDataId};
+      var data = {dataId: currentVideoId};
       var xhr = new XMLHttpRequest();
       xhr.open('POST', '/comments');
       xhr.setRequestHeader('Content-type', 'application/json');
@@ -252,6 +242,25 @@ function attachThumbnailListener() {
   }
 }
 
+function writeHistory(videoId, thumb) {
+  this.videoId = videoId;
+  this.thumb = thumb || 0;
+
+  data = {
+    videoId: this.videoId,
+    thumb: this.thumb
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/writeHistory');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
+  xhr.addEventListener('load', function() {
+    var response = JSON.parse(xhr.response);
+    console.log(response);
+  })
+}
+
 function attachPlaylistButtonListener() {
   var nodeList = document.getElementsByClassName('playlistButton');
   for (var i = 0; i < nodeList.length; i++) {
@@ -259,7 +268,7 @@ function attachPlaylistButtonListener() {
       var playlistId = event.target.getAttribute('data-id');
       playlistArray.push(playlistId);
       playlistArray = _.uniq(playlistArray);
-      showPlaylist(playlistArray);
+      playlistData(playlistArray);
     })
   }
 }
@@ -301,7 +310,7 @@ function addThumbnail(node, link, id, img, titleText) {
   addPlaylist.setAttribute('data-img', img);
 }
 
-function showPlaylist(playlistArray) {
+function playlistData(playlistArray) {
   while (currentPlaylistIndex < playlistArray.length) {
     var data = {dataId: playlistArray[currentPlaylistIndex]};
 
@@ -348,7 +357,7 @@ function showPlaylist(playlistArray) {
   }
 }
 
-function showHistory() {
+function historyData() {
   var promise = new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest;
     xhr.open('GET', '/history');
