@@ -46,6 +46,7 @@ homeButton.addEventListener('click', function(event) {
     showRecommendVideo();
   }
   showHome();
+  showRecommendVideo();
 })
 
 trendingButton.addEventListener('click', function(event) {
@@ -117,7 +118,6 @@ window.addEventListener('load', function() {
     trendingData();
     showHome();
   });
-  console.log(playlistArray);
 });
 
 function recommendData() {
@@ -157,8 +157,6 @@ function recommendData() {
         addThumbnail(recommendResult, link, id, img, title);
       });
     }
-    attachThumbnailListener();
-    attachPlaylistButtonListener();
   })
 };
 
@@ -177,8 +175,6 @@ function trendingData() {
       var title = items[i].snippet.title;
       addThumbnail(trendingResult, link, id, img, title);
     }
-    attachThumbnailListener();
-    attachPlaylistButtonListener();
   })
 };
 
@@ -198,57 +194,50 @@ function searchData() {
       var title = response[i].title;
       addThumbnail(searchResult, link, id, img, title);
     }
-    attachThumbnailListener();
     attachPlaylistButtonListener();
   })
   showSearchResult();
 }
 
-function attachThumbnailListener() {
-  var nodeList = document.getElementsByClassName('videoImage');
-  for (var i = 0; i < nodeList.length; i++) {
-    nodeList[i].addEventListener('click', function(event) {
-      var promise = new Promise(function(resolve, reject) {
-        currentVideoId = event.target.getAttribute('data-id');
+function attachThumbnailListener(thumbImage) {
+  thumbImage.addEventListener('click', function(event) {
+    var promise = new Promise(function(resolve, reject) {
+      currentVideoId = event.target.getAttribute('data-id');
+      var link = event.target.getAttribute('data-link');
+      link = link.replace("watch?v=", "v/");
+      link = link + "?autoplay=1";
+      player.setAttribute('src', link);
+      showPlayVideo();
+      clearResult(commentNode);
+      clearResult(videoTitle);
+      var data = {dataId: currentVideoId};
+      var xhr = new XMLHttpRequest;
+      xhr.open('POST', '/comments');
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.send(JSON.stringify(data));
+      xhr.addEventListener('load', function() {
+        var response = JSON.parse(xhr.response);
+        videoTitle.appendChild(document.createTextNode(response.videoTitle));
 
-        var link = event.target.getAttribute('data-link');
-        link = link.replace("watch?v=", "v/");
-        link = link + "?autoplay=1";
-        player.setAttribute('src', link);
-        showPlayVideo();
-
-        clearResult(commentNode);
-        clearResult(videoTitle);
-        var data = {dataId: currentVideoId};
-        var xhr = new XMLHttpRequest;
-        xhr.open('POST', '/comments');
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.send(JSON.stringify(data));
-        xhr.addEventListener('load', function() {
-          var response = JSON.parse(xhr.response);
-          videoTitle.appendChild(document.createTextNode(response.videoTitle));
-
-          var commentArray = response.comments;
-          if(commentArray.length > 0) {
-            for (var i = 0; i < commentArray.length; i++) {
-              addCommentMedia(commentArray[i], commentNode);
-            }
+        var commentArray = response.comments;
+        if(commentArray.length > 0) {
+          for (var i = 0; i < commentArray.length; i++) {
+            addCommentMedia(commentArray[i], commentNode);
           }
-          else {
-            var noComment = document.createElement('h1');
-            var noCommentText = document.createTextNode('No comment.');
-            noComment.appendChild(noCommentText);
-            commentNode.appendChild(noComment);
-          }
-          resolve();
-        })
-      })
-
-      promise.then(function() {
-        writeHistory(currentVideoId);
+        }
+        else {
+          var noComment = document.createElement('h1');
+          var noCommentText = document.createTextNode('No comment.');
+          noComment.appendChild(noCommentText);
+          commentNode.appendChild(noComment);
+        }
+        resolve();
       })
     })
-  }
+    promise.then(function() {
+      writeHistory(currentVideoId);
+    })
+  })
 }
 
 function writeHistory(videoId, thumb) {
@@ -301,31 +290,34 @@ function addThumbnail(node, link, id, img, titleText) {
   addPlaylist.setAttribute('data-link', link);
   addPlaylist.setAttribute('data-id', id);
   addPlaylist.setAttribute('data-img', img);
+
+  attachThumbnailListener(thumbImage);
+  attachPlaylistButtonListener(addPlaylist);
 }
 
-function attachPlaylistButtonListener() {
-  var nodeList = document.getElementsByClassName('playlistButton');
+function attachPlaylistButtonListener(playlistButton) {
+  playlistButton.addEventListener('click', function(event) {
+    var playlistId = event.target.getAttribute('data-id');
+    playlistArray.push(playlistId);
+    playlistArray = _.uniq(playlistArray);
+    playlistData(playlistArray);
 
-  for (var i = 0; i < nodeList.length; i++) {
-    nodeList[i].addEventListener('click', function(event) {
-      var playlistId = event.target.getAttribute('data-id');
-      playlistArray.push(playlistId);
-      playlistArray = _.uniq(playlistArray);
-      playlistData(playlistArray);
-
-      // writePlaylist(playlistId);
-    })
-  }
+    // writePlaylist(playlistId);
+  })
 }
 
 function getPlaylist(playlistArray) {
-  var xhr = new XMLHttpRequest;
-  xhr.open('GET', '/getPlaylist');
-  xhr.send();
-  xhr.addEventListener('load', function() {
-    var response = JSON.parse(xhr.response);
-    playlistArray = response;
-    console.log(playlistArray);
+  var promise = new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest;
+    xhr.open('GET', '/getPlaylist');
+    xhr.send();
+    xhr.addEventListener('load', function() {
+      var response = JSON.parse(xhr.response);
+      resolve(response);
+    })
+  })
+  promise.then(function(value) {
+    // playlistData(value);
   })
 }
 
@@ -366,7 +358,7 @@ function playlistData(playlistArray) {
       thumbImage.setAttribute('class', 'videoImage');
       caption.setAttribute('class', 'caption');
 
-      attachThumbnailListener();
+      attachThumbnailListener(thumbImage);
 
       videoBlock.addEventListener('click', function() {
         videoBlock.removeChild(videoBlock.firstChild);
@@ -440,7 +432,7 @@ function historyData() {
         thumbImage.setAttribute('class', 'videoImage');
         caption.setAttribute('class', 'caption');
 
-        attachThumbnailListener();
+        attachThumbnailListener(thumbImage);
       });
     }
   });
