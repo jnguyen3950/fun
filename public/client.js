@@ -113,7 +113,7 @@ window.addEventListener('load', function() {
       historyData();
       recommendData();
       showRecommendVideo();
-      getPlaylist(playlistArray);
+      getPlaylist();
     }
     trendingData();
     showHome();
@@ -300,12 +300,12 @@ function attachPlaylistButtonListener(playlistButton) {
     var playlistId = event.target.getAttribute('data-id');
     playlistArray.push(playlistId);
     playlistArray = _.uniq(playlistArray);
+    writePlaylist([playlistId]);
     playlistData(playlistArray);
-    writePlaylist(playlistId);
   })
 }
 
-function getPlaylist(playlistArray) {
+function getPlaylist() {
   var promise = new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest;
     xhr.open('GET', '/getPlaylist');
@@ -316,15 +316,15 @@ function getPlaylist(playlistArray) {
     })
   })
   promise.then(function(value) {
-    // playlistData(value);
+    playlistData(value);
+    playlistArray = value;
   })
 }
 
-function playlistData(playlistArray) {
-  while (currentPlaylistIndex < playlistArray.length) {
-    var data = {dataId: playlistArray[currentPlaylistIndex]};
-
+function playlistData(itemArray) {
+  while (currentPlaylistIndex < itemArray.length) {
     var promise = new Promise(function(resolve, reject) {
+      var data = {dataId: itemArray[currentPlaylistIndex]};
       var xhr = new XMLHttpRequest;
       xhr.open('POST', '/searchPlaylist');
       xhr.setRequestHeader('Content-type', 'application/json');
@@ -360,6 +360,9 @@ function playlistData(playlistArray) {
       attachThumbnailListener(thumbImage);
 
       videoBlock.addEventListener('click', function() {
+        playlistArray = _.reject(playlistArray, function(target) {return target == response[0].id});
+        writePlaylist(playlistArray);
+
         videoBlock.removeChild(videoBlock.firstChild);
       })
     })

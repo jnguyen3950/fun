@@ -110,8 +110,13 @@ app.post('/writePlaylist', jsonParser, cookieParser(), function(req, res) {
   promise.then(function(value) {
     for (var i = 0; i < value.length; i++) {
       if (value[i].id == req.cookies.id) {
-        value[i].playlist.push(req.body.videoId);
-        value[i].playlist = _.uniq(value[i].playlist);
+        if(req.body.videoId.length == 1) {
+          value[i].playlist = value[i].playlist.concat(req.body.videoId);
+          value[i].playlist = _.uniq(value[i].playlist);
+        }
+        else {
+          value[i].playlist = req.body.videoId;
+        }
       }
     }
     var myData = JSON.stringify(value);
