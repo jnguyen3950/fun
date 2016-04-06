@@ -25,7 +25,6 @@ var playVideo = document.getElementById('playVideo');
 var videoTitle = document.getElementById('videoTitle');
 
 var loginStatus;
-var currentUserId;
 var currentVideoId;
 var playlistArray = [];
 var currentPlaylistIndex = 0;
@@ -113,10 +112,12 @@ window.addEventListener('load', function() {
       historyData();
       recommendData();
       showRecommendVideo();
+      getPlaylist(playlistArray);
     }
     trendingData();
     showHome();
   });
+  console.log(playlistArray);
 });
 
 function recommendData() {
@@ -184,7 +185,7 @@ function trendingData() {
 function searchData() {
   clearResult(searchResult);
   var data = {term: searchBox.value};
-  var xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest;
   xhr.open('POST', '/search');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(data));
@@ -207,39 +208,44 @@ function attachThumbnailListener() {
   var nodeList = document.getElementsByClassName('videoImage');
   for (var i = 0; i < nodeList.length; i++) {
     nodeList[i].addEventListener('click', function(event) {
+      var promise = new Promise(function(resolve, reject) {
+        currentVideoId = event.target.getAttribute('data-id');
 
-      currentVideoId = event.target.getAttribute('data-id');
-      writeHistory(currentVideoId)
+        var link = event.target.getAttribute('data-link');
+        link = link.replace("watch?v=", "v/");
+        link = link + "?autoplay=1";
+        player.setAttribute('src', link);
+        showPlayVideo();
 
-      var link = event.target.getAttribute('data-link');
-      link = link.replace("watch?v=", "v/");
-      link = link + "?autoplay=1";
-      player.setAttribute('src', link);
-      showPlayVideo();
+        clearResult(commentNode);
+        clearResult(videoTitle);
+        var data = {dataId: currentVideoId};
+        var xhr = new XMLHttpRequest;
+        xhr.open('POST', '/comments');
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(JSON.stringify(data));
+        xhr.addEventListener('load', function() {
+          var response = JSON.parse(xhr.response);
+          videoTitle.appendChild(document.createTextNode(response.videoTitle));
 
-      clearResult(commentNode);
-      clearResult(videoTitle);
-      var data = {dataId: currentVideoId};
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', '/comments');
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.send(JSON.stringify(data));
-      xhr.addEventListener('load', function() {
-        var response = JSON.parse(xhr.response);
-        videoTitle.appendChild(document.createTextNode(response.videoTitle));
-
-        var commentArray = response.comments;
-        if(commentArray.length > 0) {
-          for (var i = 0; i < commentArray.length; i++) {
-            addCommentMedia(commentArray[i], commentNode);
+          var commentArray = response.comments;
+          if(commentArray.length > 0) {
+            for (var i = 0; i < commentArray.length; i++) {
+              addCommentMedia(commentArray[i], commentNode);
+            }
           }
-        }
-        else {
-          var noComment = document.createElement('h1');
-          var noCommentText = document.createTextNode('No comment.');
-          noComment.appendChild(noCommentText);
-          commentNode.appendChild(noComment);
-        }
+          else {
+            var noComment = document.createElement('h1');
+            var noCommentText = document.createTextNode('No comment.');
+            noComment.appendChild(noCommentText);
+            commentNode.appendChild(noComment);
+          }
+          resolve();
+        })
+      })
+
+      promise.then(function() {
+        writeHistory(currentVideoId);
       })
     })
   }
@@ -254,26 +260,10 @@ function writeHistory(videoId, thumb) {
     thumb: this.thumb
   }
 
-  var xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest;
   xhr.open('POST', '/writeHistory');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(data));
-  xhr.addEventListener('load', function() {
-    var response = JSON.parse(xhr.response);
-    console.log(response);
-  })
-}
-
-function attachPlaylistButtonListener() {
-  var nodeList = document.getElementsByClassName('playlistButton');
-  for (var i = 0; i < nodeList.length; i++) {
-    nodeList[i].addEventListener('click', function(event) {
-      var playlistId = event.target.getAttribute('data-id');
-      playlistArray.push(playlistId);
-      playlistArray = _.uniq(playlistArray);
-      playlistData(playlistArray);
-    })
-  }
 }
 
 function addThumbnail(node, link, id, img, titleText) {
@@ -313,12 +303,38 @@ function addThumbnail(node, link, id, img, titleText) {
   addPlaylist.setAttribute('data-img', img);
 }
 
+function attachPlaylistButtonListener() {
+  var nodeList = document.getElementsByClassName('playlistButton');
+
+  for (var i = 0; i < nodeList.length; i++) {
+    nodeList[i].addEventListener('click', function(event) {
+      var playlistId = event.target.getAttribute('data-id');
+      playlistArray.push(playlistId);
+      playlistArray = _.uniq(playlistArray);
+      playlistData(playlistArray);
+
+      // writePlaylist(playlistId);
+    })
+  }
+}
+
+function getPlaylist(playlistArray) {
+  var xhr = new XMLHttpRequest;
+  xhr.open('GET', '/getPlaylist');
+  xhr.send();
+  xhr.addEventListener('load', function() {
+    var response = JSON.parse(xhr.response);
+    playlistArray = response;
+    console.log(playlistArray);
+  })
+}
+
 function playlistData(playlistArray) {
   while (currentPlaylistIndex < playlistArray.length) {
     var data = {dataId: playlistArray[currentPlaylistIndex]};
 
     var promise = new Promise(function(resolve, reject) {
-      var xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest;
       xhr.open('POST', '/searchPlaylist');
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.send(JSON.stringify(data));
@@ -358,6 +374,19 @@ function playlistData(playlistArray) {
     })
     currentPlaylistIndex++;
   }
+}
+
+function writePlaylist(videoId) {
+  this.videoId = videoId;
+
+  data = {
+    videoId: this.videoId
+  }
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/writePlaylist');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
 }
 
 function historyData() {

@@ -67,6 +67,24 @@ app.post('/search', jsonParser, function(req, res) {
   });
 });
 
+app.get('/getPlaylist', cookieParser(), function(req, res) {
+  var promise = new Promise(function(resolve, reject) {
+    fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+      if(err) res.send(err);
+      var parsedData = JSON.parse(data);
+      for (var i = 0; i < parsedData.length; i++) {
+        if (req.cookies.id == parsedData[i].id) {
+          var playlist = parsedData[i].playlist;
+        }
+      }
+      resolve(playlist);
+    });
+  });
+  promise.then(function(value) {
+    res.send(value);
+  });
+})
+
 app.post('/searchPlaylist', jsonParser, function(req, res) {
   var opts = {
     maxResults: 1,
@@ -87,6 +105,7 @@ app.post('/writePlaylist', jsonParser, function(req, res) {
       resolve(parsedData);
     });
   });
+
   promise.then(function(value) {
     for (var i = 0; i < value.length; i++) {
       if (value[i].id == req.cookies.id) {
@@ -94,7 +113,6 @@ app.post('/writePlaylist', jsonParser, function(req, res) {
         value[i].playlist = _.uniq(value[i].playlist);
       }
     }
-
     var myData = JSON.stringify(value);
     fs.writeFile('fs/data.txt', myData, function(err) {
       if (err) {
@@ -104,19 +122,27 @@ app.post('/writePlaylist', jsonParser, function(req, res) {
       }
       console.log('Playlist saved successfully.')
     });
+    return value[i].playlist;
+  }).then(function(playlist) {
+    res.send(playlist);
   });
 });
 
 app.get('/history', cookieParser(), function(req, res) {
-  fs.readFile('fs/data.txt', 'utf8', function(err, data) {
-    if(err) res.send(err);
-    var parsedData = JSON.parse(data);
-    for (var i = 0; i < parsedData.length; i++) {
-      if (req.cookies.id == parsedData[i].id) {
-        var watchedId = parsedData[i].watchedId;
+  var promise = new Promise(function(resolve, reject) {
+    fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+      if(err) res.send(err);
+      var parsedData = JSON.parse(data);
+      for (var i = 0; i < parsedData.length; i++) {
+        if (req.cookies.id == parsedData[i].id) {
+          var watchedId = parsedData[i].watchedId;
+        }
       }
-    }
-    res.send(watchedId);
+      resolve(watchedId);
+    });
+  });
+  promise.then(function(value) {
+    res.send(value);
   });
 });
 
@@ -200,4 +226,7 @@ app.get('/trending', function(req, res) {
   });
 });
 
-app.listen(8080);
+var port = process.env.PORT || 1337;
+app.listen(port, function() {
+ console.log("listening on port " + port);
+});
