@@ -301,8 +301,7 @@ function attachPlaylistButtonListener(playlistButton) {
     playlistArray.push(playlistId);
     playlistArray = _.uniq(playlistArray);
     playlistData(playlistArray);
-
-    // writePlaylist(playlistId);
+    writePlaylist(playlistId);
   })
 }
 

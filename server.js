@@ -7,6 +7,7 @@ var querystring = require('querystring');
 var request = require('request');
 var search = require('youtube-search');
 var fetchCommentPage = require('youtube-comment-api')();
+var _ = require('underscore');
 
 var key = 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM';
 
@@ -97,7 +98,7 @@ app.post('/searchPlaylist', jsonParser, function(req, res) {
   });
 });
 
-app.post('/writePlaylist', jsonParser, function(req, res) {
+app.post('/writePlaylist', jsonParser, cookieParser(), function(req, res) {
   var promise = new Promise(function(resolve, reject) {
     fs.readFile('fs/data.txt', 'utf8', function(err, data) {
       if(err) res.send(err);
@@ -109,7 +110,7 @@ app.post('/writePlaylist', jsonParser, function(req, res) {
   promise.then(function(value) {
     for (var i = 0; i < value.length; i++) {
       if (value[i].id == req.cookies.id) {
-        value[i].playlist.push(req.body.playlist);
+        value[i].playlist.push(req.body.videoId);
         value[i].playlist = _.uniq(value[i].playlist);
       }
     }
@@ -122,9 +123,6 @@ app.post('/writePlaylist', jsonParser, function(req, res) {
       }
       console.log('Playlist saved successfully.')
     });
-    return value[i].playlist;
-  }).then(function(playlist) {
-    res.send(playlist);
   });
 });
 
