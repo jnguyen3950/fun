@@ -6,6 +6,10 @@ form {
   margin: 10px 30px 0px 30px;
 }
 
+legend {
+  margin-bottom: 5px;
+}
+
 .playlistButton {
   position: absolute;
   right: 25px;
@@ -32,6 +36,15 @@ form {
 .btn-success {
   margin-right: 30px;
   margin-bottom: 10px;
+}
+
+.btn-tag {
+  width: 100px;
+  margin-left: 10px;
+}
+
+#main {
+  margin-top: 20px;
 }
 
 #tag {

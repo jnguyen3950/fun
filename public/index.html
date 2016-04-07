@@ -112,18 +112,21 @@
                 <div class="embed-responsive embed-responsive-16by9">
                   <iframe id="player" class="embed-responsive-item" allowfullscreen></iframe>
                 </div>
-                <div id="tag" class="btn-group pull-right" data-toggle="buttons">
-                  <legend>Thumb this video</legend>
+                <div id="tag" class="pull-right" >
+                  <legend>Rate this video</legend>
                   <fieldset class="radiogroup">
-                    <input id="good" type="radio" class="radios"><span class="fa fa-thumbs-o-up"> Good</span></input>
-                    <br>
-                    <input id="bleh" type="radio" class="radios"><span class="fa fa-thumbs-o-down"> Bleh</span></input>
+                    <div class="btn-group" data-toggle="buttons">
+                      <input id="good" type="button" class="btn-tag" value="Good">
+                      <input id="bleh" type="button" class="btn-tag" value="Bleh">
+                    </div>
                   </fieldset>
                 </div>
               </div>
             </div>
             <div class="panel panel-default">
-              <div id="comment" class="panel-body"></div>
+              <div id="comment" class="panel-body">
+                <h3>Video comments:</h3>
+              </div>
             </div>
           </div>
         </div>

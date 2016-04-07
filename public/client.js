@@ -208,7 +208,7 @@ function attachThumbnailListener(thumbImage) {
       link = link + "?autoplay=1";
       player.setAttribute('src', link);
       showPlayVideo();
-      clearResult(commentNode);
+      clearResult(commentNode, 3);
       clearResult(videoTitle);
       var data = {dataId: currentVideoId};
       var xhr = new XMLHttpRequest;
@@ -472,14 +472,15 @@ function addCommentMedia(array, node) {
   }
 }
 
-var good = document.getElementById('good');
-console.log(good);
-// good.addEventListener('click', giveThumb(currentVideoId, 1));
-good.addEventListener('click', function() {
-  console.log("why");
-})
+document.getElementById('good').addEventListener('click', function(event) {
+  console.log("huh");
+  writeHistory(currentVideoId, 1);
+});
 
-// document.getElementById('bleh').addEventListener('click', giveThumb(currentVideoId, 2));
+document.getElementById('bleh').addEventListener('click', function(event) {
+  console.log("heh");
+  writeHistory(currentVideoId, 2);
+});
 
 function giveThumb(videoId, num) {
   var data = {videoId: videoId};
