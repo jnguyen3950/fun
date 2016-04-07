@@ -102,6 +102,14 @@ logoutButton.addEventListener('click', function() {
   })
 });
 
+document.getElementById('good').addEventListener('click', function(event) {
+  writeHistory(currentVideoId, 1);
+});
+
+document.getElementById('bleh').addEventListener('click', function(event) {
+  writeHistory(currentVideoId, 2);
+});
+
 window.addEventListener('load', function() {
   var xhr = new XMLHttpRequest;
   xhr.open('GET', '/loggedin', true);
@@ -208,7 +216,7 @@ function attachThumbnailListener(thumbImage) {
       link = link + "?autoplay=1";
       player.setAttribute('src', link);
       showPlayVideo();
-      clearResult(commentNode, 3);
+      clearResult(commentNode, 2);
       clearResult(videoTitle);
       var data = {dataId: currentVideoId};
       var xhr = new XMLHttpRequest;
@@ -240,6 +248,8 @@ function attachThumbnailListener(thumbImage) {
   })
 }
 
+var currentThumbStatus;
+
 function writeHistory(videoId, thumb) {
   this.videoId = videoId;
   this.thumb = thumb || 0;
@@ -253,6 +263,18 @@ function writeHistory(videoId, thumb) {
   xhr.open('POST', '/writeHistory');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(data));
+  xhr.addEventListener('load', function() {
+    var response = xhr.responseText;
+    if (response == 1) {
+      goodTag();
+    }
+    else if (response == 2) {
+      blehTag();
+    }
+    else {
+      noneTag();
+    }
+  })
 }
 
 function addThumbnail(node, link, id, img, titleText) {
@@ -326,7 +348,7 @@ function playlistData(itemArray) {
     var promise = new Promise(function(resolve, reject) {
       var data = {dataId: itemArray[currentPlaylistIndex]};
       var xhr = new XMLHttpRequest;
-      xhr.open('POST', '/searchPlaylist');
+      xhr.open('POST', '/searchVideoId');
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.send(JSON.stringify(data));
       xhr.addEventListener('load', function() {
@@ -399,7 +421,7 @@ function historyData() {
       var morePromise = new Promise(function(resolve, reject) {
         var data = {dataId: response[i]};
         var searchXhr = new XMLHttpRequest;
-        searchXhr.open('POST', '/searchPlaylist');
+        searchXhr.open('POST', '/searchVideoId');
         searchXhr.setRequestHeader('Content-type', 'application/json');
         searchXhr.send(JSON.stringify(data));
         searchXhr.addEventListener('load', function() {
@@ -470,26 +492,4 @@ function addCommentMedia(array, node) {
       addCommentMedia(array.replies[i], mediaBody);
     }
   }
-}
-
-document.getElementById('good').addEventListener('click', function(event) {
-  console.log("huh");
-  writeHistory(currentVideoId, 1);
-});
-
-document.getElementById('bleh').addEventListener('click', function(event) {
-  console.log("heh");
-  writeHistory(currentVideoId, 2);
-});
-
-function giveThumb(videoId, num) {
-  var data = {videoId: videoId};
-
-  var xhr = new XMLHttpRequest;
-  xhr.open('POST', '/giveThumb');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(data));
-  xhr.addEventListener('load', function() {
-    var response = JSON.parse(xhr.response);
-  })
 }

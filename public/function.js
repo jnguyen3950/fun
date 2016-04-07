@@ -75,3 +75,18 @@ function clearResult(result, num) {
     result.removeChild(result.lastChild);
   }
 }
+
+function goodTag() {
+  document.getElementById('goodTag').classList.remove("hidden");
+  document.getElementById('blehTag').classList.add("hidden");
+}
+
+function blehTag() {
+  document.getElementById('goodTag').classList.add("hidden");
+  document.getElementById('blehTag').classList.remove("hidden");
+}
+
+function noneTag() {
+  document.getElementById('goodTag').classList.remove("hidden");
+  document.getElementById('blehTag').classList.remove("hidden");
+}

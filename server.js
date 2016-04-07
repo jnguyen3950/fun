@@ -86,7 +86,7 @@ app.get('/getPlaylist', cookieParser(), function(req, res) {
   });
 })
 
-app.post('/searchPlaylist', jsonParser, function(req, res) {
+app.post('/searchVideoId', jsonParser, function(req, res) {
   var opts = {
     maxResults: 1,
     key: key
@@ -150,6 +150,9 @@ app.get('/history', cookieParser(), function(req, res) {
 });
 
 app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
+
+  var thumb;
+
   var promise = new Promise(function(resolve, reject) {
     fs.readFile('fs/data.txt', 'utf8', function(err, data) {
       if(err) res.send(err);
@@ -165,6 +168,11 @@ app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
         for (var j = 0; j < value[i].watchedId.length; j++) {
           if(value[i].watchedId[j] == req.body.videoId) {
             watchedBefore = true;
+            if(req.body.thumb != 0) {
+              value[i].thumb[j] = req.body.thumb;
+              thumb = req.body.thumb;
+            }
+            else thumb = value[i].thumb[j];
           }
         }
         if(!watchedBefore) {
@@ -181,7 +189,7 @@ app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
         res.send(err.message);
         return;
       }
-      res.send("Success");
+      res.send(JSON.stringify(thumb));
       console.log('History saved successfully.')
     });
   });
@@ -223,36 +231,6 @@ app.get('/trending', function(req, res) {
     res.send(body);
   });
 });
-
-app.post('/giveThumb', jsonParser, cookieParser(), function(req, res) {
-  console.log(req.body.videoId);
-  var promise = new Promise(function(resolve, reject) {
-    fs.readFile('fs/data.txt', 'utf8', function(err, data) {
-      if(err) res.send(err);
-      var parsedData = JSON.parse(data);
-      resolve(parsedData);
-    });
-  });
-  promise.then(function(value) {
-    for (var i = 0; i < value.length; i++) {
-      if (value[i].id == req.cookies.id) {
-        var index = value[i].indexOf(req.body.videoId);
-        console.log(index);
-      }
-    }
-
-    var myData = JSON.stringify(value);
-    fs.writeFile('fs/data.txt', myData, function(err) {
-      if (err) {
-        console.log('There has been an error saving your thumb status data.');
-        res.send(err.message);
-        return;
-      }
-      res.send("Success");
-      console.log('Thumb status saved successfully.')
-    });
-  })
-})
 
 var port = process.env.PORT || 1337;
 app.listen(port, function() {
