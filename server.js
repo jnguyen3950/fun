@@ -178,9 +178,10 @@ app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
     fs.writeFile('fs/data.txt', myData, function(err) {
       if (err) {
         console.log('There has been an error saving your history data.');
-        console.log(err.message);
+        res.send(err.message);
         return;
       }
+      res.send("Success");
       console.log('History saved successfully.')
     });
   });
@@ -204,12 +205,6 @@ app.post('/searchRecommend', jsonParser, function(req, res) {
 app.post('/comments', jsonParser, function(req, res) {
   fetchCommentPage(req.body.dataId).then(function (commentPage) {
     res.send(commentPage);
-    // return commentPage.nextPageToken;
-  // }).then(function (pageToken) {
-  //   // request next page
-  //   return fetchCommentPage('KuvWdZ3SJuQ', pageToken)
-  // }).then(function (commentPage) {
-  //   console.log(commentPage);
   });
 });
 
@@ -228,6 +223,10 @@ app.get('/trending', function(req, res) {
     res.send(body);
   });
 });
+
+app.post('/giveThumb', jsonParser, cookieParser(), function(req, res) {
+  console.log(req.body.videoId);
+})
 
 var port = process.env.PORT || 1337;
 app.listen(port, function() {

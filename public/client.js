@@ -472,33 +472,23 @@ function addCommentMedia(array, node) {
   }
 }
 
-(function addTag() {
-  var tagSet = document.createElement('div');
-  var tagLabelThumbup = document.createElement('label');
-  var tagThumbup = document.createElement('input');
-  var thumbup = document.createElement('span');
-  var thumbupText = document.createTextNode(' Good');
-  var tagLabelThumbdown = document.createElement('label');
-  var tagThumbdown = document.createElement('input');
-  var thumbdown = document.createElement('span');
-  var thumbdownText = document.createTextNode(' Bleh');
+var good = document.getElementById('good');
+console.log(good);
+// good.addEventListener('click', giveThumb(currentVideoId, 1));
+good.addEventListener('click', function() {
+  console.log("why");
+})
 
-  tagSet.setAttribute('class', 'btn-group pull-right');
-  tagSet.setAttribute('data-toggle', 'buttons');
-  tagLabelThumbup.setAttribute('class', 'btn btn-default');
-  tagThumbup.setAttribute('type', 'radio');
-  thumbup.setAttribute('class', 'fa fa-thumbs-o-up');
-  tagLabelThumbdown.setAttribute('class', 'btn btn-default');
-  tagThumbdown.setAttribute('type', 'radio');
-  thumbdown.setAttribute('class', 'fa fa-thumbs-o-down');
+// document.getElementById('bleh').addEventListener('click', giveThumb(currentVideoId, 2));
 
-  tag.appendChild(tagSet);
-  tagSet.appendChild(tagLabelThumbup);
-  tagSet.appendChild(tagLabelThumbdown);
-  tagLabelThumbup.appendChild(thumbup);
-  tagLabelThumbup.appendChild(tagThumbup);
-  thumbup.appendChild(thumbupText);
-  tagLabelThumbdown.appendChild(thumbdown);
-  tagLabelThumbdown.appendChild(tagThumbdown);
-  thumbdown.appendChild(thumbdownText);
-}());
+function giveThumb(videoId, num) {
+  var data = {videoId: videoId};
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/giveThumb');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
+  xhr.addEventListener('load', function() {
+    var response = JSON.parse(xhr.response);
+  })
+}
