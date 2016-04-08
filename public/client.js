@@ -240,7 +240,6 @@ function searchData() {
       var img = response[i].thumbnails.high.url;
       var title = response[i].title;
       var description = response[i].description;
-      console.log(response[i].description);
       addThumbnail(searchResult, link, id, img, title, description);
     }
     attachPlaylistButtonListener();
@@ -371,28 +370,31 @@ function playlistData(itemArray) {
       xhr.send(JSON.stringify(data));
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
-        resolve(response);
+        resolve(response[0]);
       })
     })
 
-    promise.then(function(response) {
+    promise.then(function(item) {
       var sidebarPlaylist = document.getElementById('sidebarPlaylist');
       var videoBlock = document.createElement('div');
       var videoThumbnail = document.createElement('div');
       var thumbImage = document.createElement('img');
       var caption = document.createElement('div');
-      var title = document.createElement('h2');
+      var title = document.createElement('h5');
+      var titleTextNode = document.createTextNode(item.title);
 
       sidebarPlaylist.appendChild(videoBlock);
       videoBlock.appendChild(videoThumbnail);
       videoThumbnail.appendChild(thumbImage);
       videoThumbnail.appendChild(caption);
       caption.appendChild(title);
+      title.appendChild(titleTextNode);
 
       videoThumbnail.setAttribute('class', 'thumbnail');
-      thumbImage.setAttribute('data-link', response[0].link);
-      thumbImage.setAttribute('data-id', response[0].id);
-      thumbImage.setAttribute('src', response[0].thumbnails.high.url);
+      thumbImage.setAttribute('data-link', item.link);
+      thumbImage.setAttribute('data-id', item.id);
+      thumbImage.setAttribute('data-description', item.description);
+      thumbImage.setAttribute('src', item.thumbnails.high.url);
       thumbImage.setAttribute('alt', 'Result video picture.');
       thumbImage.setAttribute('class', 'videoImage');
       caption.setAttribute('class', 'caption');
@@ -477,23 +479,27 @@ function historyData() {
         var link = "https://www.youtube.com/watch?v=" + id;
         var img = item.thumbnails.high.url;
         var title = item.title;
+        var description = item.description;
 
         var sidebarHistory = document.getElementById('sidebarHistory');
         var videoBlock = document.createElement('div');
         var videoThumbnail = document.createElement('div');
         var thumbImage = document.createElement('img');
         var caption = document.createElement('div');
-        var title = document.createElement('h2');
+        var title = document.createElement('h5');
+        var titleTextNode = document.createTextNode(title);
 
         sidebarHistory.appendChild(videoBlock);
         videoBlock.appendChild(videoThumbnail);
         videoThumbnail.appendChild(thumbImage);
         videoThumbnail.appendChild(caption);
         caption.appendChild(title);
+        title.appendChild(titleTextNode);
 
         videoThumbnail.setAttribute('class', 'thumbnail');
         thumbImage.setAttribute('data-link', link);
         thumbImage.setAttribute('data-id', id);
+        thumbImage.setAttribute('data-description', description);
         thumbImage.setAttribute('src', img);
         thumbImage.setAttribute('alt', 'Result video picture.');
         thumbImage.setAttribute('class', 'videoImage');
