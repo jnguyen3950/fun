@@ -32,14 +32,39 @@ app.get('/loggedin', cookieParser(), function(req, res) {
 });
 
 app.post('/signup', jsonParser, function(req, res) {
+  var taken = false;
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) res.send(err);
     var parsedData = JSON.parse(data);
 
-    for (var i = 0; i < userData.length; i++) {
-      if (userData[i].username == req.body.username) {
-        res.send()
+    for (var i = 0; i < parsedData.length; i++) {
+      if (parsedData[i].username == req.body.username) {
+        taken = true;
       }
+    }
+    if (taken) res.sendStatus(400);
+    else {
+      var newUser = {
+        id: parsedData.length,
+        username: req.body.username,
+        password: req.body.password,
+        playlist: [],
+        watchedId: [],
+        thumb: []
+      }
+      parsedData.push(newUser);
+
+      var myData = JSON.stringify(parsedData);
+      fs.writeFile('fs/data.txt', myData, function(err) {
+        if (err) {
+          console.log('There has been an error saving new user.');
+          console.log(err.message);
+          return;
+        }
+        console.log('New user saved successfully.')
+      });
+
+      res.sendStatus(200);
     }
   });
 });

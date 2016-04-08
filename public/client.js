@@ -7,6 +7,9 @@ var trendingButton = document.getElementById('trendingButton');
 var loginError = document.getElementById('loginError');
 var loginButton = document.getElementById('loginButton');
 var loginSubmitButton = document.getElementById('loginSubmitButton')
+var signupError = document.getElementById('signupError');
+var signupButton = document.getElementById('signupButton');
+var signupSubmitButton = document.getElementById('signupSubmitButton');
 var logoutButton = document.getElementById('logoutButton');
 var sidebar = document.getElementById('sidebar');
 var sidebarPlaylist = document.getElementById('sidebarPlaylist');
@@ -62,32 +65,15 @@ playlistButton.addEventListener('click', function() {
   showPlaylist();
 })
 
+signupSubmitButton.addEventListener('click', function(event) {
+  signup();
+})
+
 loginSubmitButton.addEventListener('click', function() {
   var inputUsername = document.getElementById('inputUsername').value;
   var inputPassword = document.getElementById('inputPassword').value;
 
-  var loginInfo = {
-    username: inputUsername,
-    password: inputPassword
-  }
-
-  var data = JSON.stringify(loginInfo);
-  var xhr = new XMLHttpRequest;
-  xhr.open('POST', '/login');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(data);
-  xhr.addEventListener('load', function() {
-    var loginStatus = xhr.status;
-    if(loginStatus == 200) {
-      showLoggedIn();
-      historyData();
-      recommendData();
-      showRecommendVideo();
-    }
-    else {
-      loginError.classList.remove("hidden");
-    }
-  })
+  login(inputUsername, inputPassword);
 })
 
 logoutButton.addEventListener('click', function() {
@@ -494,8 +480,8 @@ function addCommentMedia(array, node) {
 }
 
 function signup() {
-  var signupUsername = document.getElementById('signupUsername');
-  var signupPassword = document.getElementById('signupPassword');
+  var signupUsername = document.getElementById('signupUsername').value;
+  var signupPassword = document.getElementById('signupPassword').value;
 
   var data = {username: signupUsername,
               password: signupPassword}
@@ -504,13 +490,42 @@ function signup() {
   xhr.open('POST', '/signup');
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(JSON.stringify(data));
-  xhr.addEventListener('click', function() {
-    var response = response.responseText;
-    if (response == 200) {
+  xhr.addEventListener('load', function() {
+    var response = xhr.responseText;
+    if (response == 'OK') {
       console.log("User signed up.");
+      login(signupUsername, signupPassword);
     }
     else {
       console.log("Username is taken.");
+      signupError.classList.remove("hidden");
+      loginError.classList.add("hidden");
+    }
+  })
+}
+
+function login(inputUsername, inputPassword) {
+  var loginInfo = {
+    username: inputUsername,
+    password: inputPassword
+  }
+
+  var data = JSON.stringify(loginInfo);
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/login');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(data);
+  xhr.addEventListener('load', function() {
+    var loginStatus = xhr.status;
+    if(loginStatus == 200) {
+      showLoggedIn();
+      historyData();
+      recommendData();
+      showRecommendVideo();
+    }
+    else {
+      loginError.classList.remove("hidden");
+      signupError.classList.add("hidden");
     }
   })
 }

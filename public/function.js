@@ -2,11 +2,13 @@ function showLoggedIn() {
   loginButton.classList.add("hidden");
   logoutButton.classList.remove("hidden");
   loginError.classList.add("hidden");
+  signupButton.classList.add("hidden");
 }
 
 function showLoggedOut() {
   loginButton.classList.remove("hidden");
   logoutButton.classList.add("hidden");
+  signupButton.classList.remove("hidden");
 }
 
 function showHome() {
