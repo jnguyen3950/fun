@@ -140,10 +140,13 @@
               </div>
               <div class="panel-body">
                 <div class="embed-responsive embed-responsive-16by9">
-                  <iframe id="player" class="embed-responsive-item" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+                  <iframe id="player" class="embed-responsive-item" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen"></iframe>
                 </div>
-                <div id="tag" class="pull-right" >
-                  <legend>Rate this video</legend>
+                <div id="videoDescription" class="col-md-8">
+                  <h3>Description:</h3>
+                </div>
+                <div id="tag" class="col-md-4">
+                  <legend><strong>Rate this video:</strong></legend>
                   <fieldset>
                     <div id="goodTag" class="alert alert-success hidden" role="alert">
                       <strong>Good!</strong> You like this video.
@@ -151,9 +154,13 @@
                     <div id="blehTag" class="alert alert-warning hidden" role="alert">
                       <strong>Bleh!</strong> You bleh this video.
                     </div>
-                    <div class="btn-group" data-toggle="buttons">
-                      <input id="good" type="button" class="btn btn-default btn-tag" value="Good">
-                      <input id="bleh" type="button" class="btn btn-default btn-tag" value="Bleh">
+                    <div class="btn-group btn-group-justified" role="group" data-toggle="buttons">
+                      <div class="btn-group" role="group">
+                        <input id="good" type="button" class="btn btn-default btn-tag" value="Good">
+                      </div>
+                      <div class="btn-group" role="group">
+                        <input id="bleh" type="button" class="btn btn-default btn-tag" value="Bleh">
+                      </div>
                     </div>
                   </fieldset>
                 </div>
@@ -161,7 +168,7 @@
             </div>
             <div class="panel panel-default">
               <div id="comment" class="panel-body">
-                <h3>Video comments:</h3>
+                <legend><h3>Video comments:</h3></legend>
               </div>
             </div>
           </div>

@@ -51,10 +51,6 @@ legend {
   margin-bottom: 10px;
 }
 
-.btn-default {
-  width: 120px;
-}
-
 li {
   display: inline;
   padding-right: 2px;
@@ -63,6 +59,10 @@ li {
 
 #main {
   margin-top: 20px;
+}
+
+#comment {
+  padding: 30px;
 }
 
 #tag {

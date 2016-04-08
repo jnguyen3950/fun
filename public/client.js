@@ -15,7 +15,6 @@ var sidebar = document.getElementById('sidebar');
 var sidebarPlaylist = document.getElementById('sidebarPlaylist');
 var sidebarHistory = document.getElementById('sidebarHistory');
 var main = document.getElementById('main');
-var commentNode = document.getElementById('comment');
 var searchButton = document.getElementById('searchButton');
 var searchBox = document.getElementById('searchBox');
 var recommend = document.getElementById('recommend');
@@ -26,6 +25,8 @@ var search = document.getElementById('search');
 var searchResult = document.getElementById('searchResult');
 var playVideo = document.getElementById('playVideo');
 var videoTitle = document.getElementById('videoTitle');
+var videoDescription = document.getElementById('videoDescription');
+var commentNode = document.getElementById('comment');
 
 var loginStatus;
 var currentVideoId;
@@ -198,7 +199,8 @@ function recommendData() {
         var link = "https://www.youtube.com/watch?v=" + id;
         var img = items[0].snippet.thumbnails.high.url;
         var title = items[0].snippet.title;
-        addThumbnail(recommendResult, link, id, img, title);
+        var description = items[0].snippet.description;
+        addThumbnail(recommendResult, link, id, img, title, description);
       });
     }
   })
@@ -217,7 +219,8 @@ function trendingData() {
       var link = "https://www.youtube.com/watch?v=" + id;
       var img = items[i].snippet.thumbnails.high.url;
       var title = items[i].snippet.title;
-      addThumbnail(trendingResult, link, id, img, title);
+      var description = items[i].snippet.description;
+      addThumbnail(trendingResult, link, id, img, title, description);
     }
   })
 };
@@ -236,7 +239,9 @@ function searchData() {
       var id = response[i].id;
       var img = response[i].thumbnails.high.url;
       var title = response[i].title;
-      addThumbnail(searchResult, link, id, img, title);
+      var description = response[i].description;
+      console.log(response[i].description);
+      addThumbnail(searchResult, link, id, img, title, description);
     }
     attachPlaylistButtonListener();
   })
@@ -255,8 +260,14 @@ function attachThumbnailListener(thumbImage) {
       link = link + "?autoplay=1";
       player.setAttribute('src', link);
       showPlayVideo();
-      clearResult(commentNode, 2);
       clearResult(videoTitle);
+      clearResult(videoDescription, 2);
+      clearResult(commentNode, 2);
+
+      var caption = (event.target.nextSibling);
+      videoTitle.appendChild(document.createTextNode(caption.firstChild.textContent));
+      videoDescription.appendChild(document.createTextNode(event.target.getAttribute('data-description')));
+
       var data = {dataId: currentVideoId};
       var xhr = new XMLHttpRequest;
       xhr.open('POST', '/comments');
@@ -264,8 +275,6 @@ function attachThumbnailListener(thumbImage) {
       xhr.send(JSON.stringify(data));
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
-        videoTitle.appendChild(document.createTextNode(response.videoTitle));
-
         var commentArray = response.comments;
         if(commentArray.length > 0) {
           for (var i = 0; i < commentArray.length; i++) {
@@ -287,14 +296,13 @@ function attachThumbnailListener(thumbImage) {
   })
 }
 
-function addThumbnail(node, link, id, img, titleText) {
+function addThumbnail(node, link, id, img, titleText, description) {
   var videoBlock = document.createElement('div');
   var videoThumbnail = document.createElement('div');
   var thumbImage = document.createElement('img');
   var caption = document.createElement('div');
   var title = document.createElement('h5');
   var titleTextNode = document.createTextNode(titleText);
-  var description = document.createElement('p');
   var addPlaylist = document.createElement('a');
   var addPlayListTextNode = document.createTextNode('Add to playlist');
 
@@ -303,7 +311,6 @@ function addThumbnail(node, link, id, img, titleText) {
   videoThumbnail.appendChild(thumbImage);
   videoThumbnail.appendChild(caption);
   caption.appendChild(title);
-  caption.appendChild(description);
   caption.appendChild(addPlaylist);
   title.appendChild(titleTextNode);
   addPlaylist.appendChild(addPlayListTextNode);
@@ -312,6 +319,7 @@ function addThumbnail(node, link, id, img, titleText) {
   videoThumbnail.setAttribute('class', 'thumbnail');
   thumbImage.setAttribute('data-link', link);
   thumbImage.setAttribute('data-id', id);
+  thumbImage.setAttribute('data-description', description);
   thumbImage.setAttribute('src', img);
   thumbImage.setAttribute('alt', 'Result video picture.');
   thumbImage.setAttribute('class', 'videoImage');
