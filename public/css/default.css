@@ -33,15 +33,24 @@ legend {
   width: 250px;
 }
 
+.btn {
+  margin: 0px;
+}
+
 .btn-success {
   margin-right: 30px;
   margin-bottom: 10px;
 }
 
-.btn-tag {
-  width: 100px;
-  margin-left: 10px;
+.btn-default {
+  width: 120px;
 }
+
+li {
+  display: inline;
+  padding-right: 2px;
+}
+
 
 #main {
   margin-top: 20px;
@@ -51,6 +60,7 @@ legend {
   padding: 10px;
   border: 1px solid lightgrey;
   border-radius: 5px;
+  margin-top: 10px;
 }
 
 #good {

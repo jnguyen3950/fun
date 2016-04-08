@@ -31,6 +31,19 @@ app.get('/loggedin', cookieParser(), function(req, res) {
   }
 });
 
+app.post('/signup', jsonParser, function(req, res) {
+  fs.readFile('fs/data.txt', 'utf8', function(err, data) {
+    if(err) res.send(err);
+    var parsedData = JSON.parse(data);
+
+    for (var i = 0; i < userData.length; i++) {
+      if (userData[i].username == req.body.username) {
+        res.send()
+      }
+    }
+  });
+});
+
 app.post('/login', jsonParser, function(req, res) {
   fs.readFile('fs/data.txt', 'utf8', function(err, data) {
     if(err) res.send(err);

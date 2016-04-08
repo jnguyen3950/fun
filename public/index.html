@@ -38,23 +38,52 @@
         <ul class="nav navbar-nav pull-right">
           <li>
             <div id='loginError' class="hidden alert alert-danger" role="alert">
-              <h5>Sorry, your login combination is incorrect. </h5>
+              <h5>Sorry, your login combination is incorrect.</h5>
             </div>
+          </li>
+          <li>
+            <li>
+              <div id='signupError' class="hidden alert alert-danger" role="alert">
+                <h5>Sorry, username is taken.</h5>
+              </div>
+            </li>
           </li>
           <li id='loginButton' class="dropdown pull-right active">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Log in</a>
             <ul class="dropdown-menu" role="menu">
-              <form>
-                <fieldset class="form-group">
-                  <label for="inputUsername">Username</label>
-                  <input type="text" id="inputUsername" class="form-control" placeholder="guest" autofocus="">
-                </fieldset>
-                <fieldset class="form-group">
-                  <label for="inputPassword">Password</label>
-                  <input type="password" id="inputPassword" class="form-control" placeholder="">
-                </fieldset>
-              </form>
+              <li>
+                <form>
+                  <legend>Log in</legend>
+                  <fieldset class="form-group">
+                    <label for="inputUsername">Username</label>
+                    <input type="text" id="inputUsername" class="form-control" placeholder="guest" autofocus="">
+                  </fieldset>
+                  <fieldset class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" placeholder="">
+                  </fieldset>
+                </form>
+              </li>
               <li id="loginSubmitButton" class="pull-right"><button class="btn btn-sm btn-success" type="submit">Submit</button></li>
+            </ul>
+          </li>
+          <li id='singupButton' class="dropdown pull-right active">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sign up</a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <form>
+                  <legend>Sign up</legend>
+                  <fieldset class="form-group">
+                    <label for="singupUsername">Username</label>
+                    <input type="text" id="singupUsername" class="form-control" placeholder="Username" autofocus="">
+                  </fieldset>
+                  <fieldset class="form-group">
+                    <label for="singupPassword">Password</label>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="Password">
+                  </fieldset>
+                </form>
+              </li>
+              <li id="signupSubmitButton" class="pull-right"><button class="btn btn-sm btn-success" type="submit">Submit</button></li>
             </ul>
           </li>
           <li id="logoutButton" class="active hidden"><a href="#">Log out</a></li>
@@ -74,8 +103,8 @@
       </ul>
     </div>
 
-    <div id="main" class="col-md-12">
-      <div id="recommend" class="container hidden">
+    <div id="main" class="col-md-offset-1 col-md-10">
+      <div id="recommend" class="hidden">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h2 class="panel-title">Recommended</h2>
@@ -84,7 +113,7 @@
           </div>
         </div>
       </div>
-      <div id="trending" class="container">
+      <div id="trending">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h2 class="panel-title">Trending</h2>
@@ -93,7 +122,7 @@
           </div>
         </div>
       </div>
-      <div id="search" class="container hidden">
+      <div id="search" class="hidden">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h2 class="panel-title">Search result</h2>
@@ -102,7 +131,7 @@
           </div>
         </div>
       </div>
-      <div id="playVideo" class="container hidden">
+      <div id="playVideo" class="hidden">
         <div class="col-md-10 col-md-offset-1">
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -114,7 +143,7 @@
                 </div>
                 <div id="tag" class="pull-right" >
                   <legend>Rate this video</legend>
-                  <fieldset class="radiogroup">
+                  <fieldset>
                     <div id="goodTag" class="alert alert-success hidden" role="alert">
                       <strong>Good!</strong> You like this video.
                     </div>
@@ -122,8 +151,8 @@
                       <strong>Bleh!</strong> You bleh this video.
                     </div>
                     <div class="btn-group" data-toggle="buttons">
-                      <input id="good" type="button" class="btn-tag" value="Good">
-                      <input id="bleh" type="button" class="btn-tag" value="Bleh">
+                      <input id="good" type="button" class="btn btn-default btn-tag" value="Good">
+                      <input id="bleh" type="button" class="btn btn-default btn-tag" value="Bleh">
                     </div>
                   </fieldset>
                 </div>

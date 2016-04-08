@@ -209,6 +209,7 @@ function searchData() {
 
 function attachThumbnailListener(thumbImage) {
   thumbImage.addEventListener('click', function(event) {
+    noneTag();
     var promise = new Promise(function(resolve, reject) {
       currentVideoId = event.target.getAttribute('data-id');
       var link = event.target.getAttribute('data-link');
@@ -244,36 +245,10 @@ function attachThumbnailListener(thumbImage) {
     })
     promise.then(function() {
       writeHistory(currentVideoId);
+    }).then(function() {
+      clearResult(sidebarHistory);
+      historyData();
     })
-  })
-}
-
-var currentThumbStatus;
-
-function writeHistory(videoId, thumb) {
-  this.videoId = videoId;
-  this.thumb = thumb || 0;
-
-  data = {
-    videoId: this.videoId,
-    thumb: this.thumb
-  }
-
-  var xhr = new XMLHttpRequest;
-  xhr.open('POST', '/writeHistory');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(data));
-  xhr.addEventListener('load', function() {
-    var response = xhr.responseText;
-    if (response == 1) {
-      goodTag();
-    }
-    else if (response == 2) {
-      blehTag();
-    }
-    else {
-      noneTag();
-    }
   })
 }
 
@@ -405,6 +380,30 @@ function writePlaylist(videoId) {
   xhr.send(JSON.stringify(data));
 }
 
+function writeHistory(videoId, thumb) {
+  this.videoId = videoId;
+  this.thumb = thumb || 0;
+
+  data = {
+    videoId: this.videoId,
+    thumb: this.thumb
+  }
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/writeHistory');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
+  xhr.addEventListener('load', function() {
+    var response = xhr.responseText;
+    if (response == 1) {
+      goodTag();
+    }
+    else if (response == 2) {
+      blehTag();
+    }
+  })
+}
+
 function historyData() {
   var promise = new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest;
@@ -435,14 +434,14 @@ function historyData() {
         var img = item.thumbnails.high.url;
         var title = item.title;
 
-        var sidebarPlaylist = document.getElementById('sidebarHistory');
+        var sidebarHistory = document.getElementById('sidebarHistory');
         var videoBlock = document.createElement('div');
         var videoThumbnail = document.createElement('div');
         var thumbImage = document.createElement('img');
         var caption = document.createElement('div');
         var title = document.createElement('h2');
 
-        sidebarPlaylist.appendChild(videoBlock);
+        sidebarHistory.appendChild(videoBlock);
         videoBlock.appendChild(videoThumbnail);
         videoThumbnail.appendChild(thumbImage);
         videoThumbnail.appendChild(caption);
@@ -482,7 +481,7 @@ function addCommentMedia(array, node) {
   mediaBlock.setAttribute('class', 'media');
   mediaLeft.setAttribute('class', 'media-left');
   image.setAttribute('class', 'media-object');
-  image.setAttribute('src', '');
+  image.setAttribute('src', '/batman.jpg');
   image.setAttribute('style', 'width: 64px; height: 64px;');
   mediaBody.setAttribute('class', 'media-body');
   userName.setAttribute('class', 'media-heading');
@@ -492,4 +491,26 @@ function addCommentMedia(array, node) {
       addCommentMedia(array.replies[i], mediaBody);
     }
   }
+}
+
+function signup() {
+  var signupUsername = document.getElementById('signupUsername');
+  var signupPassword = document.getElementById('signupPassword');
+
+  var data = {username: signupUsername,
+              password: signupPassword}
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/signup');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
+  xhr.addEventListener('click', function() {
+    var response = response.responseText;
+    if (response == 200) {
+      console.log("User signed up.");
+    }
+    else {
+      console.log("Username is taken.");
+    }
+  })
 }
