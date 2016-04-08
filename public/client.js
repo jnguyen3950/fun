@@ -84,7 +84,8 @@ logoutButton.addEventListener('click', function() {
     showLoggedOut();
     clearResult(recommendResult);
     hideRecommendVideo();
-    clearResult(sidebarHistory, 1);
+    clearResult(sidebarHistory, 3);
+    clearResult(sidebarPlaylist, 3);
   })
 });
 
@@ -113,6 +114,55 @@ window.addEventListener('load', function() {
     showHome();
   });
 });
+
+function signup() {
+  var signupUsername = document.getElementById('signupUsername').value;
+  var signupPassword = document.getElementById('signupPassword').value;
+
+  var data = {username: signupUsername,
+              password: signupPassword}
+
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/signup');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(JSON.stringify(data));
+  xhr.addEventListener('load', function() {
+    var response = xhr.responseText;
+    if (response == 'OK') {
+      login(signupUsername, signupPassword);
+    }
+    else {
+      signupError.classList.remove("hidden");
+      loginError.classList.add("hidden");
+    }
+  })
+}
+
+function login(inputUsername, inputPassword) {
+  var loginInfo = {
+    username: inputUsername,
+    password: inputPassword
+  }
+
+  var data = JSON.stringify(loginInfo);
+  var xhr = new XMLHttpRequest;
+  xhr.open('POST', '/login');
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(data);
+  xhr.addEventListener('load', function() {
+    var loginStatus = xhr.status;
+    if(loginStatus == 200) {
+      showLoggedIn();
+      historyData();
+      recommendData();
+      showRecommendVideo();
+    }
+    else {
+      loginError.classList.remove("hidden");
+      signupError.classList.add("hidden");
+    }
+  })
+}
 
 function recommendData() {
   clearResult(recommendResult);
@@ -198,6 +248,8 @@ function attachThumbnailListener(thumbImage) {
     noneTag();
     var promise = new Promise(function(resolve, reject) {
       currentVideoId = event.target.getAttribute('data-id');
+      writeHistory(currentVideoId);
+
       var link = event.target.getAttribute('data-link');
       link = link.replace("watch?v=", "v/");
       link = link + "?autoplay=1";
@@ -226,13 +278,11 @@ function attachThumbnailListener(thumbImage) {
           noComment.appendChild(noCommentText);
           commentNode.appendChild(noComment);
         }
-        resolve();
+        resolve(response);
       })
     })
     promise.then(function() {
-      writeHistory(currentVideoId);
-
-      // historyData();
+      historyData();
     })
   })
 }
@@ -390,6 +440,7 @@ function writeHistory(videoId, thumb) {
 }
 
 function historyData() {
+  clearResult(sidebarHistory, 3);
   var promise = new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest;
     xhr.open('GET', '/history');
@@ -476,55 +527,4 @@ function addCommentMedia(array, node) {
       addCommentMedia(array.replies[i], mediaBody);
     }
   }
-}
-
-function signup() {
-  var signupUsername = document.getElementById('signupUsername').value;
-  var signupPassword = document.getElementById('signupPassword').value;
-
-  var data = {username: signupUsername,
-              password: signupPassword}
-
-  var xhr = new XMLHttpRequest;
-  xhr.open('POST', '/signup');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(JSON.stringify(data));
-  xhr.addEventListener('load', function() {
-    var response = xhr.responseText;
-    if (response == 'OK') {
-      console.log("User signed up.");
-      login(signupUsername, signupPassword);
-    }
-    else {
-      console.log("Username is taken.");
-      signupError.classList.remove("hidden");
-      loginError.classList.add("hidden");
-    }
-  })
-}
-
-function login(inputUsername, inputPassword) {
-  var loginInfo = {
-    username: inputUsername,
-    password: inputPassword
-  }
-
-  var data = JSON.stringify(loginInfo);
-  var xhr = new XMLHttpRequest;
-  xhr.open('POST', '/login');
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(data);
-  xhr.addEventListener('load', function() {
-    var loginStatus = xhr.status;
-    if(loginStatus == 200) {
-      showLoggedIn();
-      historyData();
-      recommendData();
-      showRecommendVideo();
-    }
-    else {
-      loginError.classList.remove("hidden");
-      signupError.classList.add("hidden");
-    }
-  })
 }

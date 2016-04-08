@@ -57,13 +57,10 @@ app.post('/signup', jsonParser, function(req, res) {
       var myData = JSON.stringify(parsedData);
       fs.writeFile('fs/data.txt', myData, function(err) {
         if (err) {
-          console.log('There has been an error saving new user.');
-          console.log(err.message);
+          res.sendStatus(500);
           return;
         }
-        console.log('New user saved successfully.')
       });
-
       res.sendStatus(200);
     }
   });
@@ -160,11 +157,8 @@ app.post('/writePlaylist', jsonParser, cookieParser(), function(req, res) {
     var myData = JSON.stringify(value);
     fs.writeFile('fs/data.txt', myData, function(err) {
       if (err) {
-        console.log('There has been an error saving your playlist data.');
-        console.log(err.message);
-        return;
+        res.sendStatus(500);
       }
-      console.log('Playlist saved successfully.')
     });
   });
 });
@@ -188,7 +182,6 @@ app.get('/history', cookieParser(), function(req, res) {
 });
 
 app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
-
   var thumb;
 
   var promise = new Promise(function(resolve, reject) {
@@ -223,12 +216,10 @@ app.post('/writeHistory', jsonParser, cookieParser(), function(req, res) {
     var myData = JSON.stringify(value);
     fs.writeFile('fs/data.txt', myData, function(err) {
       if (err) {
-        console.log('There has been an error saving your history data.');
-        res.send(err.message);
+        res.sendStatus(500);
         return;
       }
       res.send(JSON.stringify(thumb));
-      console.log('History saved successfully.')
     });
   });
 });
