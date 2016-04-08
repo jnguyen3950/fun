@@ -1,5 +1,5 @@
 body {
-  background-color: #2C3E50;
+  background-color: #3b3a36;
 }
 
 form {
@@ -16,8 +16,17 @@ legend {
   bottom: 30px;
 }
 
-.panel-heading {
+.panel-default > .panel-heading {
+  background-color: #e9ece5;
   height: 50px;
+}
+
+.panel-title {
+  font-size: 30px;
+}
+
+.thumbnail {
+  background-color: #ecf0f1;
 }
 
 .alert {

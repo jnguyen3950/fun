@@ -84,7 +84,7 @@ logoutButton.addEventListener('click', function() {
     showLoggedOut();
     clearResult(recommendResult);
     hideRecommendVideo();
-    clearResult(sidebarHistory);
+    clearResult(sidebarHistory, 1);
   })
 });
 
@@ -231,9 +231,8 @@ function attachThumbnailListener(thumbImage) {
     })
     promise.then(function() {
       writeHistory(currentVideoId);
-    }).then(function() {
-      clearResult(sidebarHistory);
-      historyData();
+
+      // historyData();
     })
   })
 }
