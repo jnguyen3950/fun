@@ -255,7 +255,7 @@ function attachThumbnailListener(thumbImage) {
       writeHistory(currentVideoId);
 
       var link = event.target.getAttribute('data-link');
-      link = link.replace("watch?v=", "v/");
+      link = link.replace("watch?v=", "embed/");
       link = link + "?autoplay=1";
       player.setAttribute('src', link);
       showPlayVideo();
@@ -478,7 +478,7 @@ function historyData() {
         var id = item.id;
         var link = "https://www.youtube.com/watch?v=" + id;
         var img = item.thumbnails.high.url;
-        var title = item.title;
+        var titleText = item.title;
         var description = item.description;
 
         var sidebarHistory = document.getElementById('sidebarHistory');
@@ -487,7 +487,7 @@ function historyData() {
         var thumbImage = document.createElement('img');
         var caption = document.createElement('div');
         var title = document.createElement('h5');
-        var titleTextNode = document.createTextNode(title);
+        var titleTextNode = document.createTextNode(titleText);
 
         sidebarHistory.appendChild(videoBlock);
         videoBlock.appendChild(videoThumbnail);
