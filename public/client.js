@@ -274,7 +274,7 @@ function attachThumbnailListener(thumbImage) {
       xhr.send(JSON.stringify(data));
       xhr.addEventListener('load', function() {
         var response = JSON.parse(xhr.response);
-        var commentArray = response.comments;
+        var commentArray = response.items;
         if(commentArray.length > 0) {
           for (var i = 0; i < commentArray.length; i++) {
             addCommentMedia(commentArray[i], commentNode);
@@ -517,8 +517,8 @@ function addCommentMedia(array, node) {
   var image = document.createElement('img');
   var mediaBody = document.createElement('div');
   var userName = document.createElement('h4');
-  var userNameText = document.createTextNode(array.user);
-  var commentText = document.createTextNode(array.commentText);
+  var userNameText = document.createTextNode(array.snippet.topLevelComment.snippet.authorDisplayName);
+  var commentText = document.createTextNode(array.snippet.topLevelComment.snippet.textDisplay);
 
   node.appendChild(mediaBlock);
   mediaBlock.appendChild(mediaLeft);
@@ -531,14 +531,8 @@ function addCommentMedia(array, node) {
   mediaBlock.setAttribute('class', 'media');
   mediaLeft.setAttribute('class', 'media-left');
   image.setAttribute('class', 'media-object');
-  image.setAttribute('src', '/batman.jpg');
+  image.setAttribute('src', array.snippet.topLevelComment.snippet.authorProfileImageUrl);
   image.setAttribute('style', 'width: 64px; height: 64px;');
   mediaBody.setAttribute('class', 'media-body');
   userName.setAttribute('class', 'media-heading');
-
-  if(array.hasReplies) {
-    for (var i = 0; i < array.replies.length; i++) {
-      addCommentMedia(array.replies[i], mediaBody);
-    }
-  }
 }

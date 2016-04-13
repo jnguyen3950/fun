@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var querystring = require('querystring');
 var request = require('request');
 var search = require('youtube-search');
-var fetchCommentPage = require('youtube-comment-api')();
 var _ = require('underscore');
 
 var key = 'AIzaSyDZ9sbX9zra9vN5WUjxMAQCf_5j01pHqVM';
@@ -94,6 +93,7 @@ app.post('/search', jsonParser, function(req, res) {
     maxResults: 12,
     regionID: 'US',
     type: 'video',
+    textFormat: 'plainText',
     key: key,
   };
 
@@ -124,6 +124,7 @@ app.get('/getPlaylist', cookieParser(), function(req, res) {
 app.post('/searchVideoId', jsonParser, function(req, res) {
   var opts = {
     maxResults: 1,
+    textFormat: 'plainText',
     key: key
   };
 
@@ -230,6 +231,7 @@ app.post('/searchRecommend', jsonParser, function(req, res) {
     maxResults: 1,
     type: 'video',
     relatedToVideoId: req.body.watchedId,
+    textFormat: 'plainText',
     key: key
   }
 
@@ -240,9 +242,20 @@ app.post('/searchRecommend', jsonParser, function(req, res) {
 })
 
 app.post('/comments', jsonParser, function(req, res) {
-  fetchCommentPage(req.body.dataId).then(function (commentPage) {
-    res.send(commentPage);
-  });
+  var queryParam = {
+    part: 'snippet',
+    videoId: req.body.dataId,
+    maxResult: 20,
+    moderationStatus: 'published',
+    order: 'relevance',
+    textFormat: 'plainText',
+    key: key
+  }
+
+  request.get('https://www.googleapis.com/youtube/v3/commentThreads?' + querystring.stringify(queryParam), function(err, response, body) {
+    if (err) res.send(err);
+    res.send(body);
+  })
 });
 
 app.get('/trending', function(req, res) {
@@ -252,6 +265,7 @@ app.get('/trending', function(req, res) {
     chart: 'mostPopular',
     regionID: 'US',
     type: 'video',
+    textFormat: 'plainText',
     key: key
   }
 
