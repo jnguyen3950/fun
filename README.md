@@ -12,4 +12,8 @@
 
 ## Video load page:
 
-![Fun video page](https://github.com/jnguyen3950/fun/blob/master/img/screenshot1.png)
+![Fun video page](https://github.com/jnguyen3950/fun/blob/master/img/screenshot2.png)
+
+## Video search page:
+
+![Fun search page](https://github.com/jnguyen3950/fun/blob/master/img/screenshot3.png)
